@@ -1,9 +1,10 @@
+"use client";
 import { useState } from "react";
-import SurveyStep from "./SurveyStep";
+import { db } from "../utils/firebase";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 
 export default function MoveForm() {
   const [step, setStep] = useState(1);
-
   const [formData, setFormData] = useState({
     serviceType: "",
     moveSize: "",
@@ -15,245 +16,303 @@ export default function MoveForm() {
     postcodeFrom: "",
     postcodeTo: "",
     moveDate: "",
-    name: "",
-    phone: "",
-    email: "",
+    contactName: "",
+    contactPhone: "",
+    contactEmail: "",
   });
 
-  const nextStep = () => setStep((s) => s + 1);
-  const prevStep = () => setStep((s) => s - 1);
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const nextStep = () => setStep((prev) => prev + 1);
+  const prevStep = () => setStep((prev) => prev - 1);
+
+  const handleSubmit = async () => {
+    try {
+      const docRef = await addDoc(collection(db, "requests"), {
+        ...formData,
+        createdAt: Timestamp.now(),
+      });
+
+      alert("Cererea a fost salvată cu succes! ID: " + docRef.id);
+
+      // Resetare formular
+      setFormData({
+        serviceType: "",
+        moveSize: "",
+        packingHelp: "",
+        stairsFrom: "",
+        stairsTo: "",
+        details: "",
+        survey: "",
+        postcodeFrom: "",
+        postcodeTo: "",
+        moveDate: "",
+        contactName: "",
+        contactPhone: "",
+        contactEmail: "",
+      });
+      setStep(1);
+    } catch (error) {
+      console.error("Eroare la salvare:", error);
+      alert("A apărut o eroare la salvarea cererii.");
+    }
+  };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white shadow rounded-lg p-6 mt-10">
-      <h2 className="text-2xl font-bold text-center mb-6">Formular mutare</h2>
+    <div className="max-w-2xl mx-auto bg-white shadow p-6 rounded-lg">
+      <h1 className="text-2xl font-bold mb-4 text-center">Formular Mutare</h1>
 
-      {/* Pas 1 – Tip serviciu */}
+      {/* PAS 1 - Tip serviciu */}
       {step === 1 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">Ce dorești să faci?</h3>
-          <div className="space-y-2">
-            {["Mutare completă", "Transport câteva obiecte", "Debarasare / Aruncat lucruri"].map(
-              (opt) => (
-                <label key={opt} className="flex items-center space-x-2 border rounded-lg p-3">
-                  <input
-                    type="radio"
-                    value={opt}
-                    checked={formData.serviceType === opt}
-                    onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
-                  />
-                  <span>{opt}</span>
-                </label>
-              )
-            )}
+          <p className="font-semibold mb-2">Ce tip de serviciu dorești?</p>
+          {["Mutare completă", "Doar câteva lucruri", "Aruncare obiecte"].map((opt) => (
+            <label key={opt} className="block">
+              <input
+                type="radio"
+                name="serviceType"
+                value={opt}
+                checked={formData.serviceType === opt}
+                onChange={(e) => handleChange("serviceType", e.target.value)}
+              />
+              <span className="ml-2">{opt}</span>
+            </label>
+          ))}
+          <div className="flex justify-between mt-4">
+            <button onClick={nextStep} className="bg-green-500 text-white px-4 py-2 rounded">
+              Următorul
+            </button>
           </div>
         </div>
       )}
 
-      {/* Pas 2 – Dimensiune mutare */}
-      {step === 2 && formData.serviceType === "Mutare completă" && (
+      {/* PAS 2 - Dimensiune mutare */}
+      {step === 2 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">Ce dimensiune are mutarea?</h3>
-          <div className="space-y-2">
-            {["Garsonieră", "2 camere", "3 camere", "4 camere sau mai mult"].map((opt) => (
-              <label key={opt} className="flex items-center space-x-2 border rounded-lg p-3">
-                <input
-                  type="radio"
-                  value={opt}
-                  checked={formData.moveSize === opt}
-                  onChange={(e) => setFormData({ ...formData, moveSize: e.target.value })}
-                />
-                <span>{opt}</span>
-              </label>
-            ))}
+          <p className="font-semibold mb-2">Ce dimensiune are mutarea?</p>
+          {["1 cameră", "2 camere", "3 camere", "4+ camere"].map((opt) => (
+            <label key={opt} className="block">
+              <input
+                type="radio"
+                name="moveSize"
+                value={opt}
+                checked={formData.moveSize === opt}
+                onChange={(e) => handleChange("moveSize", e.target.value)}
+              />
+              <span className="ml-2">{opt}</span>
+            </label>
+          ))}
+          <div className="flex justify-between mt-4">
+            <button onClick={prevStep} className="bg-gray-400 text-white px-4 py-2 rounded">
+              Înapoi
+            </button>
+            <button onClick={nextStep} className="bg-green-500 text-white px-4 py-2 rounded">
+              Următorul
+            </button>
           </div>
         </div>
       )}
 
-      {/* Pas 3 – Ajutor la împachetare */}
+      {/* PAS 3 - Ajutor împachetare */}
       {step === 3 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">Ai nevoie de ajutor la împachetare?</h3>
-          <div className="space-y-2">
-            {["Da, împachetare completă", "Doar mobilă/aparate mari", "Nu, ne ocupăm noi"].map(
-              (opt) => (
-                <label key={opt} className="flex items-center space-x-2 border rounded-lg p-3">
-                  <input
-                    type="radio"
-                    value={opt}
-                    checked={formData.packingHelp === opt}
-                    onChange={(e) => setFormData({ ...formData, packingHelp: e.target.value })}
-                  />
-                  <span>{opt}</span>
-                </label>
-              )
-            )}
+          <p className="font-semibold mb-2">Ai nevoie de ajutor la împachetare?</p>
+          {["Da, împachetare completă", "Doar mobilă mare & electrocasnice", "Nu"].map((opt) => (
+            <label key={opt} className="block">
+              <input
+                type="radio"
+                name="packingHelp"
+                value={opt}
+                checked={formData.packingHelp === opt}
+                onChange={(e) => handleChange("packingHelp", e.target.value)}
+              />
+              <span className="ml-2">{opt}</span>
+            </label>
+          ))}
+          <div className="flex justify-between mt-4">
+            <button onClick={prevStep} className="bg-gray-400 text-white px-4 py-2 rounded">
+              Înapoi
+            </button>
+            <button onClick={nextStep} className="bg-green-500 text-white px-4 py-2 rounded">
+              Următorul
+            </button>
           </div>
         </div>
       )}
 
-      {/* Pas 4 – Acces ridicare */}
+      {/* PAS 4 - Scări/Lift la plecare */}
       {step === 4 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">Acces la adresa de ridicare</h3>
-          <div className="space-y-2">
-            {["Parter", "Etaj 1-3 fără lift", "Etaj 4+ fără lift", "Lift persoane", "Lift marfă"].map(
-              (opt) => (
-                <label key={opt} className="flex items-center space-x-2 border rounded-lg p-3">
-                  <input
-                    type="radio"
-                    value={opt}
-                    checked={formData.stairsFrom === opt}
-                    onChange={(e) => setFormData({ ...formData, stairsFrom: e.target.value })}
-                  />
-                  <span>{opt}</span>
-                </label>
-              )
-            )}
+          <p className="font-semibold mb-2">La locația de plecare?</p>
+          {["Parter", "1-3 etaje", "4+ etaje", "Lift persoane", "Lift marfă"].map((opt) => (
+            <label key={opt} className="block">
+              <input
+                type="radio"
+                name="stairsFrom"
+                value={opt}
+                checked={formData.stairsFrom === opt}
+                onChange={(e) => handleChange("stairsFrom", e.target.value)}
+              />
+              <span className="ml-2">{opt}</span>
+            </label>
+          ))}
+          <div className="flex justify-between mt-4">
+            <button onClick={prevStep} className="bg-gray-400 text-white px-4 py-2 rounded">
+              Înapoi
+            </button>
+            <button onClick={nextStep} className="bg-green-500 text-white px-4 py-2 rounded">
+              Următorul
+            </button>
           </div>
         </div>
       )}
 
-      {/* Pas 5 – Acces destinație */}
+      {/* PAS 5 - Scări/Lift la destinație */}
       {step === 5 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">Acces la adresa de destinație</h3>
-          <div className="space-y-2">
-            {["Parter", "Etaj 1-3 fără lift", "Etaj 4+ fără lift", "Lift persoane", "Lift marfă"].map(
-              (opt) => (
-                <label key={opt} className="flex items-center space-x-2 border rounded-lg p-3">
-                  <input
-                    type="radio"
-                    value={opt}
-                    checked={formData.stairsTo === opt}
-                    onChange={(e) => setFormData({ ...formData, stairsTo: e.target.value })}
-                  />
-                  <span>{opt}</span>
-                </label>
-              )
-            )}
+          <p className="font-semibold mb-2">La locația de destinație?</p>
+          {["Parter", "1-3 etaje", "4+ etaje", "Lift persoane", "Lift marfă"].map((opt) => (
+            <label key={opt} className="block">
+              <input
+                type="radio"
+                name="stairsTo"
+                value={opt}
+                checked={formData.stairsTo === opt}
+                onChange={(e) => handleChange("stairsTo", e.target.value)}
+              />
+              <span className="ml-2">{opt}</span>
+            </label>
+          ))}
+          <div className="flex justify-between mt-4">
+            <button onClick={prevStep} className="bg-gray-400 text-white px-4 py-2 rounded">
+              Înapoi
+            </button>
+            <button onClick={nextStep} className="bg-green-500 text-white px-4 py-2 rounded">
+              Următorul
+            </button>
           </div>
         </div>
       )}
 
-      {/* Pas 6 – Detalii suplimentare */}
+      {/* PAS 6 - Survey */}
       {step === 6 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">Detalii suplimentare</h3>
-          <textarea
-            placeholder="Descrie obiectele mari sau observațiile tale..."
-            value={formData.details}
-            onChange={(e) => setFormData({ ...formData, details: e.target.value })}
-            className="w-full border p-3 rounded-lg"
-            rows={4}
-          />
+          <p className="font-semibold mb-2">Pentru o estimare corectă, accepți un survey?</p>
+          {["Video call", "Vizită în persoană", "Nu, prefer fără"].map((opt) => (
+            <label key={opt} className="block">
+              <input
+                type="radio"
+                name="survey"
+                value={opt}
+                checked={formData.survey === opt}
+                onChange={(e) => handleChange("survey", e.target.value)}
+              />
+              <span className="ml-2">{opt}</span>
+            </label>
+          ))}
+          <div className="flex justify-between mt-4">
+            <button onClick={prevStep} className="bg-gray-400 text-white px-4 py-2 rounded">
+              Înapoi
+            </button>
+            <button onClick={nextStep} className="bg-green-500 text-white px-4 py-2 rounded">
+              Următorul
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Pas 7 – Survey */}
+      {/* PAS 7 - Detalii suplimentare */}
       {step === 7 && (
-        <SurveyStep
-          value={formData.survey}
-          onChange={(val) => setFormData({ ...formData, survey: val })}
-        />
+        <div>
+          <p className="font-semibold mb-2">Detalii suplimentare:</p>
+          <textarea
+            className="w-full border p-2 rounded"
+            value={formData.details}
+            onChange={(e) => handleChange("details", e.target.value)}
+          />
+          <div className="flex justify-between mt-4">
+            <button onClick={prevStep} className="bg-gray-400 text-white px-4 py-2 rounded">
+              Înapoi
+            </button>
+            <button onClick={nextStep} className="bg-green-500 text-white px-4 py-2 rounded">
+              Următorul
+            </button>
+          </div>
+        </div>
       )}
 
-      {/* Pas 8 – Adrese */}
+      {/* PAS 8 - Date mutare */}
       {step === 8 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">Adrese</h3>
+          <p className="font-semibold mb-2">Date despre mutare:</p>
           <input
             type="text"
-            placeholder="Cod poștal ridicare"
+            placeholder="Cod poștal plecare"
+            className="w-full border p-2 rounded mb-2"
             value={formData.postcodeFrom}
-            onChange={(e) => setFormData({ ...formData, postcodeFrom: e.target.value })}
-            className="w-full border p-3 rounded mb-3"
+            onChange={(e) => handleChange("postcodeFrom", e.target.value)}
           />
           <input
             type="text"
-            placeholder="Cod poștal livrare"
+            placeholder="Cod poștal destinație"
+            className="w-full border p-2 rounded mb-2"
             value={formData.postcodeTo}
-            onChange={(e) => setFormData({ ...formData, postcodeTo: e.target.value })}
-            className="w-full border p-3 rounded mb-3"
+            onChange={(e) => handleChange("postcodeTo", e.target.value)}
           />
-        </div>
-      )}
-
-      {/* Pas 9 – Data mutării */}
-      {step === 9 && (
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Când dorești mutarea?</h3>
           <input
             type="date"
+            className="w-full border p-2 rounded mb-2"
             value={formData.moveDate}
-            onChange={(e) => setFormData({ ...formData, moveDate: e.target.value })}
-            className="w-full border p-3 rounded"
+            onChange={(e) => handleChange("moveDate", e.target.value)}
           />
+          <div className="flex justify-between mt-4">
+            <button onClick={prevStep} className="bg-gray-400 text-white px-4 py-2 rounded">
+              Înapoi
+            </button>
+            <button onClick={nextStep} className="bg-green-500 text-white px-4 py-2 rounded">
+              Următorul
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Pas 10 – Contact */}
-      {step === 10 && (
+      {/* PAS 9 - Date de contact */}
+      {step === 9 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4">Date de contact</h3>
+          <p className="font-semibold mb-2">Date de contact:</p>
           <input
             type="text"
             placeholder="Nume complet"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full border p-3 rounded mb-3"
+            className="w-full border p-2 rounded mb-2"
+            value={formData.contactName}
+            onChange={(e) => handleChange("contactName", e.target.value)}
           />
           <input
-            type="text"
+            type="tel"
             placeholder="Telefon"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="w-full border p-3 rounded mb-3"
+            className="w-full border p-2 rounded mb-2"
+            value={formData.contactPhone}
+            onChange={(e) => handleChange("contactPhone", e.target.value)}
           />
           <input
             type="email"
             placeholder="Email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="w-full border p-3 rounded mb-3"
+            className="w-full border p-2 rounded mb-2"
+            value={formData.contactEmail}
+            onChange={(e) => handleChange("contactEmail", e.target.value)}
           />
+          <div className="flex justify-between mt-4">
+            <button onClick={prevStep} className="bg-gray-400 text-white px-4 py-2 rounded">
+              Înapoi
+            </button>
+            <button onClick={handleSubmit} className="bg-green-600 text-white px-4 py-2 rounded">
+              Trimite cererea
+            </button>
+          </div>
         </div>
       )}
-
-      {/* Navigație */}
-      <div className="flex justify-between mt-6">
-        {step > 1 && (
-          <button
-            onClick={prevStep}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-          >
-            Înapoi
-          </button>
-        )}
-
-        {step < 10 ? (
-          <button
-            onClick={nextStep}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            Următorul
-          </button>
-        ) : (
-          <button
-            onClick={() => alert("Formular trimis: " + JSON.stringify(formData, null, 2))}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Trimite cererea
-          </button>
-        )}
-      </div>
-
-      {/* Progress bar */}
-      <div className="w-full bg-gray-200 h-2 mt-6 rounded">
-        <div
-          className="bg-green-500 h-2 rounded"
-          style={{ width: `${(step / 10) * 100}%` }}
-        ></div>
-      </div>
     </div>
   );
 }
