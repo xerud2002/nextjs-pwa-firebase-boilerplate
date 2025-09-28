@@ -2,48 +2,52 @@ import { useState } from "react";
 
 const steps = [
   {
-    question: "What do you need to move?",
+    question: "Ce ai de mutat?",
     options: [
-      "4 bedrooms or larger",
-      "3 bedrooms",
-      "2 bedrooms",
-      "1 bedroom home",
-      "11-20 boxes / suitcases",
-      "1-10 boxes / suitcases",
-      "Sofa moving only",
+      "Casă 4 camere sau mai mare",
+      "Apartament 3 camere",
+      "Apartament 2 camere",
+      "Garsonieră",
+      "11-20 cutii / valize",
+      "1-10 cutii / valize",
+      "Doar canapea",
     ],
   },
   {
-    question: "Do you need help with packing?",
+    question: "Ai nevoie de ajutor la împachetare?",
     options: [
-      "Yes, please disassemble & pack all items",
-      "Only large furniture & appliances",
-      "No, we will do all the packing",
+      "Da, demontare și împachetare completă",
+      "Doar pentru mobilier/aparatură mare",
+      "Nu, ne ocupăm noi de împachetare",
     ],
   },
   {
-    question: "Will we use the stairs or a lift at the loading point?",
+    question: "La adresa de încărcare se folosește scara sau liftul?",
     options: [
-      "We are on the ground floor",
-      "Stairs - 1 to 3 floors",
-      "Stairs - 4 floors or more",
-      "Passenger lift",
-      "Service lift",
+      "Parter",
+      "Scări – 1-3 etaje",
+      "Scări – peste 4 etaje",
+      "Lift pentru persoane",
+      "Lift de marfă",
     ],
   },
   {
-    question: "Where are you moving from (postcode)?",
+    question: "Care este adresa de plecare? (localitate / cod poștal)",
     input: true,
   },
   {
-    question: "When are you moving?",
+    question: "Care este adresa de destinație? (localitate / cod poștal)",
+    input: true,
+  },
+  {
+    question: "Când dorești mutarea?",
     options: [
-      "Specific Time (choose date & hour)",
-      "In Two Months",
-      "In Six Months",
-      "Just Looking For Price",
+      "Dată și oră specifică",
+      "În următoarele 2 luni",
+      "În următoarele 6 luni",
+      "Caut doar o estimare de preț",
     ],
-    input: true, // date picker
+    input: true, // aici putem pune un date picker ulterior
   },
 ];
 
@@ -55,8 +59,11 @@ export default function MoveForm() {
   const progress = ((step + 1) / steps.length) * 100;
 
   const handleNext = () => {
-    if (step < steps.length - 1) setStep(step + 1);
-    else alert("Form submitted: " + JSON.stringify(answers, null, 2));
+    if (step < steps.length - 1) {
+      setStep(step + 1);
+    } else {
+      alert("Formular trimis: " + JSON.stringify(answers, null, 2));
+    }
   };
 
   const handleChange = (value: string) => {
@@ -73,10 +80,10 @@ export default function MoveForm() {
         ></div>
       </div>
 
-      {/* Question */}
+      {/* Întrebare */}
       <h2 className="text-lg font-semibold mb-4">{currentStep.question}</h2>
 
-      {/* Options */}
+      {/* Opțiuni */}
       {currentStep.options &&
         currentStep.options.map((opt, i) => (
           <label
@@ -95,23 +102,23 @@ export default function MoveForm() {
           </label>
         ))}
 
-      {/* Input field (if exists) */}
+      {/* Câmp text (dacă există) */}
       {currentStep.input && (
         <input
           type="text"
-          placeholder="Type here..."
+          placeholder="Scrie aici..."
           value={answers[step] || ""}
           onChange={(e) => handleChange(e.target.value)}
           className="w-full border p-3 rounded-lg mb-4"
         />
       )}
 
-      {/* Next Button */}
+      {/* Butonul de navigare */}
       <button
         onClick={handleNext}
         className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition"
       >
-        {step === steps.length - 1 ? "Submit" : "Next"}
+        {step === steps.length - 1 ? "Trimite cererea" : "Următorul pas"}
       </button>
     </div>
   );
