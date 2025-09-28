@@ -33,9 +33,6 @@ export default function HomePage() {
             <Link href="/form" className="px-6 py-3 bg-green-500 text-white rounded-full shadow hover:bg-green-600">
                Obține oferte acum
             </Link>
-            <Link href="/firms" className="px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-green-600">
-               Vezi lista firmelor
-            </Link>
           </div>
         </div>
       </section>
