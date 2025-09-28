@@ -6,6 +6,7 @@ import Footer from "../components/Footer"
 import MoveForm from "../components/MoveForm";
 
 
+
 export default function HomePage() {
   return (
     <>
@@ -29,10 +30,8 @@ export default function HomePage() {
             Compară oferte de la companii verificate și alege varianta ideală pentru mutarea ta.
           </p>
           <div className="flex justify-center gap-4">
-            <Link href="/form">
-              <button className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">
-                Obține oferte acum
-              </button>
+            <Link href="/form" className="px-6 py-3 bg-green-500 text-white rounded-full shadow hover:bg-green-600">
+               Obține oferte acum
             </Link>
             <Link href="/firms" className="px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-green-600">
                Vezi lista firmelor
