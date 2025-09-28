@@ -62,8 +62,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      
-
       {/* CLIENT ACCOUNT BOX */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto rounded-2xl bg-white p-10 flex flex-col md:flex-row items-center justify-between gap-10 shadow">
