@@ -59,12 +59,6 @@ export default function HomePage() {
             <h3 className="text-lg font-semibold">Alegi firma potrivită</h3>
             <p className="text-gray-600">Compari și alegi oferta care ți se potrivește.</p>
           </div>
-          <div className="flex justify-center gap-4">
-            <Link href="/form" className="px-6 py-3 bg-green-500 text-white rounded-full shadow hover:bg-green-600">
-               Obține oferte acum
-            </Link>
-          </div>
-
         </div>
       </section>
 
