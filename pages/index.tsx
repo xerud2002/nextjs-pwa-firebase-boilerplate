@@ -17,27 +17,23 @@ export default function HomePage() {
       {/* NAVBAR */}
       <Navbar />
 
-      {/* HERO SECTION */}
-      <section className="relative h-[80vh] flex items-center justify-center">
-        <Image src="/index.png" alt="Mutări" fill className="object-cover" />
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div className="relative z-10 text-center max-w-3xl px-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+      {/* Hero Section */}
+      <section className="relative bg-white">
+        <div className="max-w-6xl mx-auto px-6 py-20 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
             Găsește firma de mutări potrivită pentru tine
           </h1>
-          <p className="text-lg text-gray-200 mb-8">
-            Compară oferte de la companii verificate și alege varianta ideală pentru mutarea ta.
+          <p className="text-lg text-gray-600 mb-8">
+            Compară oferte de la companii verificate și alege varianta ideală
+            pentru mutarea ta.
           </p>
-          <div className="flex justify-center gap-4">
-            <Link href="/form">
-              <button className="px-6 py-3 bg-green-600 text-white rounded-lg shadow hover:bg-green-700">
-                Obține oferte acum
-              </button>
-            </Link>
-            <Link href="/firms" className="px-6 py-3 border-2 border-white text-white rounded-full hover:bg-white hover:text-green-600">
-               Vezi lista firmelor
-            </Link>
-          </div>
+
+          {/* Butonul care direcționează spre formular */}
+          <Link href="/form">
+            <button className="px-8 py-4 bg-green-600 text-white text-lg rounded-lg shadow hover:bg-green-700 transition">
+              Obține oferte acum
+            </button>
+          </Link>
         </div>
       </section>
 
