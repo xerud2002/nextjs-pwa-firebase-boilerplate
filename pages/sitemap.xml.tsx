@@ -1,55 +1,42 @@
-import React from 'react'
-import { GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
-import { ParsedUrlQuery } from 'querystring'
+import { GetServerSideProps } from "next"
+import { config } from '../config/config'
 
-import { config } from 'config/config'
-import { formatDate } from 'lib/formatDate'
+function generateSiteMap() {
+  const baseUrl = config.appUrl
 
-interface SiteUrlProps {
-  path: string
+  return `<?xml version="1.0" encoding="UTF-8"?>
+   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+     <url>
+       <loc>${baseUrl}</loc>
+     </url>
+     <url>
+       <loc>${baseUrl}/about</loc>
+     </url>
+     <url>
+       <loc>${baseUrl}/contact</loc>
+     </url>
+     <url>
+       <loc>${baseUrl}/auth</loc>
+     </url>
+     <url>
+       <loc>${baseUrl}/firms</loc>
+     </url>
+   </urlset>
+ `
 }
 
-const SiteUrl = ({ path }: SiteUrlProps): string => {
-  const getDate = (): string => formatDate(new Date())
-  return (
-    `<url>
-      <loc>${config.appUrl as string}${path.substring(1)}</loc>
-      <lastmod>${getDate()}</lastmod>
-    </url>`
-  )
-}
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  const sitemap = generateSiteMap()
 
-interface SitemapProps {
-  pagePaths: string[]
-}
+  res.setHeader("Content-Type", "text/xml")
+  res.write(sitemap)
+  res.end()
 
-const Sitemap = ({ pagePaths }: SitemapProps): string => {
-  return (
-    `<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
-      ${pagePaths.map((path, index) => <SiteUrl key={index} path={path} />).join('\n')}
-    </urlset>`
-  )
-}
-
-const getPagePaths = async (): Promise<string[]> => {
-  return ['/']
-}
-
-interface SitemapPageParams extends ParsedUrlQuery {
-}
-
-export async function getServerSideProps ({ res }: GetServerSidePropsContext<SitemapPageParams>): Promise<GetServerSidePropsResult<SitemapPageParams>> {
-  if (res !== undefined) {
-    const pagePaths = await getPagePaths()
-    res.setHeader('Content-Type', 'text/xml')
-    res.write(
-      <Sitemap
-        pagePaths={pagePaths}
-      />
-    )
-    res.end()
+  return {
+    props: {},
   }
-  return { props: {} }
 }
 
-export default Sitemap
+export default function SiteMap() {
+  return null
+}

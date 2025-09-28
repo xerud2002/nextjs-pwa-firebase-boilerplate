@@ -1,20 +1,19 @@
-import { NextPage, GetServerSidePropsContext } from 'next'
-import { config } from '../config/config'
+// pages/robots.txt.tsx
+import { GetServerSideProps } from "next"
+import { config } from "../config/config"
 
-const robotsTxt = `# robotstxt.org
+function RobotsTxt() {
+  return null
+}
 
-User-agent: *
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  res.setHeader("Content-Type", "text/plain")
+  res.write(`User-agent: *
+Allow: /
 
-Sitemap: ${config.appUrl as string}sitemap.xml`
-
-const RobotsTxt: NextPage = () => null
-
-export async function getServerSideProps ({ res }: GetServerSidePropsContext): Promise<{ props: any }> {
-  if (res !== undefined) {
-    res.setHeader('Content-Type', 'text/plain')
-    res.write(robotsTxt)
-    res.end()
-  }
+Sitemap: ${config.appUrl}/sitemap.xml
+`)
+  res.end()
   return { props: {} }
 }
 
