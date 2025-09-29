@@ -8,6 +8,19 @@ import SurveyStep from "./SurveyStep";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+// Restore from localStorage when component mounts
+useEffect(() => {
+  const savedData = localStorage.getItem("moveFormData");
+  const savedStep = localStorage.getItem("moveFormStep");
+
+  if (savedData) {
+    setFormData(JSON.parse(savedData));
+  }
+  if (savedStep) {
+    setStep(Number(savedStep));
+  }
+}, []);
+
 const steps = [
   "Tip serviciu",
   "Dimensiunea mutării",
