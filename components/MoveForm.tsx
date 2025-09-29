@@ -172,12 +172,11 @@ export default function MoveForm() {
               onChange={(e) => handleChange("rooms", e.target.value)}
             >
               <option value="">Selectează</option>
-              <option>Garsonieră</option>
+              <option>1 Cameră</option>
               <option>2 camere</option>
               <option>3 camere</option>
               <option>4 camere</option>
-              <option>5 camere</option>
-              <option>6+ camere</option>
+              <option>5+ camere</option>
             </select>
 
             {/* Dacă este Casă */}
@@ -236,7 +235,6 @@ export default function MoveForm() {
             )}
           </div>
         )}
-
 
         {step === 2 && (
           <div>
