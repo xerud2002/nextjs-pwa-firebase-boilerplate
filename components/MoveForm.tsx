@@ -190,10 +190,10 @@ export default function MoveForm() {
                   onChange={(e) => handleChange("houseFloors", e.target.value)}
                 >
                   <option value="">Selectează</option>
-                  <option>1 etaj</option>
-                  <option>2 etaje</option>
-                  <option>3 etaje</option>
-                  <option>4+ etaje</option>
+                  <option>Parter</option>
+                  <option>Parter + 1 Etaj</option>
+                  <option>Parter + 2 Etaje</option>
+                  <option>Parter + 3 Etaje</option>
                 </select>
               </>
             )}
