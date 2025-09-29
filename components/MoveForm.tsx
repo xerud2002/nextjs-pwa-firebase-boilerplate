@@ -22,7 +22,8 @@ export default function MoveForm() {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
     serviceType: "",
-    moveSize: "",
+    propertyType: "",
+    rooms: "",
     packing: "",
     stairsFrom: "",
     stairsTo: "",
@@ -49,7 +50,8 @@ export default function MoveForm() {
       alert("✅ Cererea a fost salvată cu succes!");
       setFormData({
         serviceType: "",
-        moveSize: "",
+        propertyType: "",
+        rooms: "",
         packing: "",
         stairsFrom: "",
         stairsTo: "",
@@ -71,7 +73,7 @@ export default function MoveForm() {
       case 0:
         return formData.serviceType !== "";
       case 1:
-        return formData.moveSize !== "";
+        return formData.propertyType !== "" && formData.rooms !== "";
       case 2:
         return formData.packing !== "";
       case 3:
@@ -89,27 +91,24 @@ export default function MoveForm() {
     }
   };
 
-
   return (
   <div className="flex flex-col min-h-screen">
       {/* HEADER */}
       <Navbar />
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
-      {/* Progress bar simplificat */}
-      <div className="mb-6 text-center">
-        <p className="text-sm text-gray-600 mb-2">
-          Pasul {step + 1} din {steps.length}
-        </p>
-        <div className="w-full bg-gray-200 h-2 rounded-full">
-          <div
-            className="h-2 bg-green-500 rounded-full transition-all"
-            style={{ width: `${((step + 1) / steps.length) * 100}%` }}
-          />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
+        {/* Progress bar simplificat */}
+        <div className="mb-6 text-center">
+          <p className="text-sm text-gray-600 mb-2">
+            Pasul {step + 1} din {steps.length}
+          </p>
+          <div className="w-full bg-gray-200 h-2 rounded-full">
+            <div
+              className="h-2 bg-green-500 rounded-full transition-all"
+              style={{ width: `${((step + 1) / steps.length) * 100}%` }}
+            />
+          </div>
         </div>
-      </div>
-
-
 
         {/* Step content */}
         {step === 0 && (
@@ -133,20 +132,39 @@ export default function MoveForm() {
 
         {step === 1 && (
           <div>
-            <h2 className="text-xl font-bold mb-4">Dimensiunea mutării</h2>
+            <h2 className="text-xl font-bold mb-4">Tipul de proprietate și numărul de camere</h2>
+
+            {/* Tip proprietate */}
+            <label className="block font-medium mb-2">Tip proprietate</label>
+            <select
+              className="w-full border rounded-lg p-3 mb-4"
+              value={formData.propertyType || ""}
+              onChange={(e) => handleChange("propertyType", e.target.value)}
+            >
+              <option value="">Selectează tipul</option>
+              <option>Casă</option>
+              <option>Apartament</option>
+              <option>Office</option>
+            </select>
+
+            {/* Număr camere */}
+            <label className="block font-medium mb-2">Număr de camere</label>
             <select
               className="w-full border rounded-lg p-3"
-              value={formData.moveSize}
-              onChange={(e) => handleChange("moveSize", e.target.value)}
+              value={formData.rooms || ""}
+              onChange={(e) => handleChange("rooms", e.target.value)}
             >
-              <option value="">Selectează...</option>
+              <option value="">Selectează</option>
               <option>Garsonieră</option>
               <option>2 camere</option>
               <option>3 camere</option>
-              <option>4+ camere / casă mare</option>
+              <option>4 camere</option>
+              <option>5 camere</option>
+              <option>6+ camere</option>
             </select>
           </div>
         )}
+
 
         {step === 2 && (
           <div>
