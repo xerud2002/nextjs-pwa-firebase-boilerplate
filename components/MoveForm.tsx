@@ -24,6 +24,9 @@ export default function MoveForm() {
     serviceType: "",
     propertyType: "",
     rooms: "",
+    houseFloors: "",
+    floor: "",
+    lift: "",
     packing: "",
     stairsFrom: "",
     stairsTo: "",
@@ -52,6 +55,9 @@ export default function MoveForm() {
         serviceType: "",
         propertyType: "",
         rooms: "",
+        houseFloors: "",
+        floor: "",
+        lift: "",
         packing: "",
         stairsFrom: "",
         stairsTo: "",
@@ -73,7 +79,18 @@ export default function MoveForm() {
       case 0:
         return formData.serviceType !== "";
       case 1:
-        return formData.propertyType !== "" && formData.rooms !== "";
+        if (formData.propertyType === "Casă") {
+          return formData.propertyType !== "" && formData.rooms !== "" && formData.houseFloors !== "";
+        }
+        if (formData.propertyType === "Apartament" || formData.propertyType === "Office") {
+          return (
+            formData.propertyType !== "" &&
+            formData.rooms !== "" &&
+            formData.floor !== "" &&
+            (formData.floor === "Parter" || formData.lift !== "")
+          );
+        };
+        return false;
       case 2:
         return formData.packing !== "";
       case 3:
@@ -132,7 +149,7 @@ export default function MoveForm() {
 
         {step === 1 && (
           <div>
-            <h2 className="text-xl font-bold mb-4">Tipul de proprietate și numărul de camere</h2>
+            <h2 className="text-xl font-bold mb-4">Tipul de proprietate și detalii</h2>
 
             {/* Tip proprietate */}
             <label className="block font-medium mb-2">Tip proprietate</label>
@@ -147,10 +164,10 @@ export default function MoveForm() {
               <option>Office</option>
             </select>
 
-            {/* Număr camere */}
+            {/* Număr camere (valabil pentru toate) */}
             <label className="block font-medium mb-2">Număr de camere</label>
             <select
-              className="w-full border rounded-lg p-3"
+              className="w-full border rounded-lg p-3 mb-4"
               value={formData.rooms || ""}
               onChange={(e) => handleChange("rooms", e.target.value)}
             >
@@ -162,6 +179,61 @@ export default function MoveForm() {
               <option>5 camere</option>
               <option>6+ camere</option>
             </select>
+
+            {/* Dacă este Casă */}
+            {formData.propertyType === "Casă" && (
+              <>
+                <label className="block font-medium mb-2">Câte etaje are casa?</label>
+                <select
+                  className="w-full border rounded-lg p-3"
+                  value={formData.houseFloors || ""}
+                  onChange={(e) => handleChange("houseFloors", e.target.value)}
+                >
+                  <option value="">Selectează</option>
+                  <option>1 etaj</option>
+                  <option>2 etaje</option>
+                  <option>3 etaje</option>
+                  <option>4+ etaje</option>
+                </select>
+              </>
+            )}
+
+            {/* Dacă este Apartament sau Office */}
+            {(formData.propertyType === "Apartament" ||
+              formData.propertyType === "Office") && (
+              <>
+                <label className="block font-medium mb-2">La ce etaj este?</label>
+                <select
+                  className="w-full border rounded-lg p-3 mb-4"
+                  value={formData.floor || ""}
+                  onChange={(e) => handleChange("floor", e.target.value)}
+                >
+                  <option value="">Selectează</option>
+                  <option>Parter</option>
+                  <option>Etaj 1</option>
+                  <option>Etaj 2</option>
+                  <option>Etaj 3</option>
+                  <option>Etaj 4</option>
+                  <option>Etaj 5+</option>
+                </select>
+
+                {/* Dacă etajul este mai mare decât Parter */}
+                {formData.floor !== "" && formData.floor !== "Parter" && (
+                  <>
+                    <label className="block font-medium mb-2">Există lift?</label>
+                    <select
+                      className="w-full border rounded-lg p-3"
+                      value={formData.lift || ""}
+                      onChange={(e) => handleChange("lift", e.target.value)}
+                    >
+                      <option value="">Selectează</option>
+                      <option>Da</option>
+                      <option>Nu</option>
+                    </select>
+                  </>
+                )}
+              </>
+            )}
           </div>
         )}
 
