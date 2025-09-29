@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
-import { db } from "../utils/firebase";
+import { useState, useEffect } from "react";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { storage, db } from "../utils/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import SurveyStep from "./SurveyStep";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -40,6 +41,7 @@ export default function MoveForm() {
     houseFloorsTo: "",
     floorTo: "",
     liftTo: "",
+     media: "",
   });
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -51,11 +53,35 @@ export default function MoveForm() {
 
   const handleSubmit = async () => {
     try {
+      let mediaUrls: string[] = [];
+
+      if (formData.media && Array.isArray(formData.media) && formData.media.length > 0) {
+        // Upload fiecare fișier în Firebase Storage
+        mediaUrls = await Promise.all(
+          formData.media.map(async (file) => {
+            const storageRef = ref(
+              storage,
+              `requests/${Date.now()}_${file.name}`
+            );
+            await uploadBytes(storageRef, file);
+            return await getDownloadURL(storageRef);
+          })
+        );
+      }
+
+      // Salvează în Firestore
       await addDoc(collection(db, "requests"), {
         ...formData,
+        media: mediaUrls, // înlocuim File[] cu URL-uri
         createdAt: Timestamp.now(),
       });
+
       alert("✅ Cererea a fost salvată cu succes!");
+
+      // Golește form + localStorage
+      localStorage.removeItem("moveFormData");
+      localStorage.removeItem("moveFormStep");
+
       setFormData({
         serviceType: "",
         propertyType: "",
@@ -77,6 +103,7 @@ export default function MoveForm() {
         houseFloorsTo: "",
         floorTo: "",
         liftTo: "",
+        media: "",
       });
       setStep(0);
     } catch (error) {
@@ -84,6 +111,7 @@ export default function MoveForm() {
       alert("❌ A apărut o eroare la salvarea cererii.");
     }
   };
+
 
   const isStepValid = () => {
     switch (step) {
@@ -369,7 +397,7 @@ export default function MoveForm() {
                 onChange={(e) => handleChange("roomsTo", e.target.value)}
               >
                 <option value="">Selectează...</option>
-                <option>Garsonieră</option>
+                <option>1 cameră</option>
                 <option>2 camere</option>
                 <option>3 camere</option>
                 <option>4 camere</option>
@@ -439,12 +467,104 @@ export default function MoveForm() {
             </div>
           )}
 
-          {step === 5 && (
-            <SurveyStep
-              value={formData.survey}
-              onChange={(val) => handleChange("survey", val)}
-            />
+            {step === 5 && (
+            <div>
+              <h2 className="text-lg font-semibold mb-4">
+                Pentru o ofertă cât mai exactă, ești dispus să faci un survey?
+              </h2>
+
+              <div className="space-y-3">
+                <label className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    value="video"
+                    checked={formData.survey === "video"}
+                    onChange={(e) =>
+                      setFormData({ ...formData, survey: e.target.value })
+                    }
+                    className="mr-2"
+                  />
+                  Da, prin video call (WhatsApp / Zoom)
+                </label>
+
+                <label className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    value="in_person"
+                    checked={formData.survey === "in_person"}
+                    onChange={(e) =>
+                      setFormData({ ...formData, survey: e.target.value })
+                    }
+                    className="mr-2"
+                  />
+                  Da, vizită în persoană
+                </label>
+
+                <label className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    value="estimate"
+                    checked={formData.survey === "estimate"}
+                    onChange={(e) =>
+                      setFormData({ ...formData, survey: e.target.value })
+                    }
+                    className="mr-2"
+                  />
+                  Nu, doresc doar o ofertă estimativă
+                </label>
+
+                {/* ✅ Opțiune atașare poze/video acum */}
+                <label className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    value="media"
+                    checked={formData.survey === "media"}
+                    onChange={(e) =>
+                      setFormData({ ...formData, survey: e.target.value })
+                    }
+                    className="mr-2"
+                  />
+                  Vreau să atașez poze/video cu ce e de mutat acum
+                </label>
+
+                {/* ✅ Câmp upload */}
+                {formData.survey === "media" && (
+                  <div className="mt-4">
+                    <label className="block mb-2 font-medium">
+                      Încarcă poze/video
+                    </label>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,video/*"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          media: Array.from(e.target.files),
+                        })
+                      }
+                      className="block w-full text-sm text-gray-700 border rounded cursor-pointer focus:outline-none focus:ring focus:ring-green-200"
+                    />
+                  </div>
+                )}
+
+                {/* ✅ Opțiune atașare mai târziu */}
+                <label className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    value="media_later"
+                    checked={formData.survey === "media_later"}
+                    onChange={(e) =>
+                      setFormData({ ...formData, survey: e.target.value })
+                    }
+                    className="mr-2"
+                  />
+                  Vreau să atașez poze/video cu ce e de mutat mai târziu
+                </label>
+              </div>
+            </div>
           )}
+
 
           {step === 6 && (
             <div>

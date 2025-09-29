@@ -5,8 +5,9 @@ interface SurveyStepProps {
 
 export default function SurveyStep({ value, onChange }: SurveyStepProps) {
   const options = [
-    { label: " Da, prin video call (WhatsApp / Zoom)", value: "video" },
+    { label: " Da, prin video call (WhatsApp / Facebook)", value: "video" },
     { label: " Da, vizită în persoană", value: "in_person" },
+    { label: " Vreau să atașez poze/video cu ce e de mutat", value: "media" }
     { label: " Nu, doresc doar o ofertă estimativă", value: "estimate" },
   ];
 
