@@ -2,6 +2,10 @@
 import { useState } from "react";
 import { db } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
+import SurveyStep from "./SurveyStep";
+import Navbar from "../components/Navbar"
+import Footer from "../components/Footer"
+
 
 const steps = [
   "Tip serviciu",
@@ -32,28 +36,80 @@ export default function MoveForm() {
   const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
 
-  const handleSubmit = () => {
-    alert("Formular trimis:\n" + JSON.stringify(formData, null, 2));
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleSubmit = async () => {
+    try {
+      await addDoc(collection(db, "requests"), {
+        ...formData,
+        createdAt: Timestamp.now(),
+      });
+      alert("✅ Cererea a fost salvată cu succes!");
+      setFormData({
+        serviceType: "",
+        moveSize: "",
+        packing: "",
+        stairsFrom: "",
+        stairsTo: "",
+        survey: "",
+        details: "",
+        name: "",
+        phone: "",
+        email: "",
+      });
+      setStep(0);
+    } catch (error) {
+      console.error("Eroare la salvare:", error);
+      alert("❌ A apărut o eroare la salvarea cererii.");
+    }
+  };
+
+  const isStepValid = () => {
+    switch (step) {
+      case 0:
+        return formData.serviceType !== "";
+      case 1:
+        return formData.moveSize !== "";
+      case 2:
+        return formData.packing !== "";
+      case 3:
+        return formData.stairsFrom !== "";
+      case 4:
+        return formData.stairsTo !== "";
+      case 5:
+        return formData.survey !== "";
+      case 6:
+        return true; // optional
+      case 7:
+        return formData.name !== "" && formData.phone !== "" && formData.email !== "";
+      default:
+        return false;
+    }
+  };
+
+
   return (
+  <div className="flex flex-col min-h-screen">
+      {/* HEADER */}
+      <Navbar />
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
-        
-        {/* Progress bar */}
-        <div className="mb-6">
-          <div className="flex justify-between text-sm text-gray-500 mb-2">
-            {steps.map((s, i) => (
-              <span key={i} className={i <= step ? "text-green-600 font-medium" : ""}>{s}</span>
-            ))}
-          </div>
-          <div className="w-full bg-gray-200 h-2 rounded-full">
-            <div
-              className="h-2 bg-green-500 rounded-full transition-all"
-              style={{ width: `${((step + 1) / steps.length) * 100}%` }}
-            />
-          </div>
+      {/* Progress bar simplificat */}
+      <div className="mb-6 text-center">
+        <p className="text-sm text-gray-600 mb-2">
+          Pasul {step + 1} din {steps.length}
+        </p>
+        <div className="w-full bg-gray-200 h-2 rounded-full">
+          <div
+            className="h-2 bg-green-500 rounded-full transition-all"
+            style={{ width: `${((step + 1) / steps.length) * 100}%` }}
+          />
         </div>
+      </div>
+
+
 
         {/* Step content */}
         {step === 0 && (
@@ -66,7 +122,7 @@ export default function MoveForm() {
                   name="serviceType"
                   value={opt}
                   checked={formData.serviceType === opt}
-                  onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
+                  onChange={(e) => handleChange("serviceType", e.target.value)}
                   className="mr-2 text-green-600"
                 />
                 {opt}
@@ -81,7 +137,7 @@ export default function MoveForm() {
             <select
               className="w-full border rounded-lg p-3"
               value={formData.moveSize}
-              onChange={(e) => setFormData({ ...formData, moveSize: e.target.value })}
+              onChange={(e) => handleChange("moveSize", e.target.value)}
             >
               <option value="">Selectează...</option>
               <option>Garsonieră</option>
@@ -102,7 +158,7 @@ export default function MoveForm() {
                   name="packing"
                   value={opt}
                   checked={formData.packing === opt}
-                  onChange={(e) => setFormData({ ...formData, packing: e.target.value })}
+                  onChange={(e) => handleChange("packing", e.target.value)}
                   className="mr-2 text-green-600"
                 />
                 {opt}
@@ -117,7 +173,7 @@ export default function MoveForm() {
             <select
               className="w-full border rounded-lg p-3"
               value={formData.stairsFrom}
-              onChange={(e) => setFormData({ ...formData, stairsFrom: e.target.value })}
+              onChange={(e) => handleChange("stairsFrom", e.target.value)}
             >
               <option value="">Selectează...</option>
               <option>Parter</option>
@@ -134,7 +190,7 @@ export default function MoveForm() {
             <select
               className="w-full border rounded-lg p-3"
               value={formData.stairsTo}
-              onChange={(e) => setFormData({ ...formData, stairsTo: e.target.value })}
+              onChange={(e) => handleChange("stairsTo", e.target.value)}
             >
               <option value="">Selectează...</option>
               <option>Parter</option>
@@ -146,22 +202,10 @@ export default function MoveForm() {
         )}
 
         {step === 5 && (
-          <div>
-            <h2 className="text-xl font-bold mb-4">Cum vrei să faci estimarea?</h2>
-            {["Video call", "Vizită la fața locului", "Nu, doar online"].map((opt) => (
-              <label key={opt} className="block p-3 border rounded-lg mb-2 cursor-pointer hover:bg-gray-50">
-                <input
-                  type="radio"
-                  name="survey"
-                  value={opt}
-                  checked={formData.survey === opt}
-                  onChange={(e) => setFormData({ ...formData, survey: e.target.value })}
-                  className="mr-2 text-green-600"
-                />
-                {opt}
-              </label>
-            ))}
-          </div>
+          <SurveyStep
+            value={formData.survey}
+            onChange={(val) => handleChange("survey", val)}
+          />
         )}
 
         {step === 6 && (
@@ -172,7 +216,7 @@ export default function MoveForm() {
               rows={4}
               placeholder="Ex: canapea mare, parcare dificilă, acces strâmt..."
               value={formData.details}
-              onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+              onChange={(e) => handleChange("details", e.target.value)}
             />
           </div>
         )}
@@ -185,21 +229,21 @@ export default function MoveForm() {
               placeholder="Nume complet"
               className="w-full border rounded-lg p-3 mb-3"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => handleChange("name", e.target.value)}
             />
             <input
               type="text"
               placeholder="Telefon"
               className="w-full border rounded-lg p-3 mb-3"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) => handleChange("phone", e.target.value)}
             />
             <input
               type="email"
               placeholder="Email"
               className="w-full border rounded-lg p-3"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) => handleChange("email", e.target.value)}
             />
           </div>
         )}
@@ -207,21 +251,45 @@ export default function MoveForm() {
         {/* Navigation buttons */}
         <div className="mt-6 flex justify-between">
           {step > 0 && (
-            <button onClick={prevStep} className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">
+            <button
+              onClick={prevStep}
+              className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+            >
               Înapoi
             </button>
           )}
+
           {step < steps.length - 1 ? (
-            <button onClick={nextStep} className="ml-auto px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">
+            <button
+              onClick={nextStep}
+              disabled={!isStepValid()}
+              className={`ml-auto px-6 py-2 rounded-lg ${
+                isStepValid()
+                  ? "bg-green-600 text-white hover:bg-green-700"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
               Următorul
             </button>
           ) : (
-            <button onClick={handleSubmit} className="ml-auto px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">
+            <button
+              onClick={handleSubmit}
+              disabled={!isStepValid()}
+              className={`ml-auto px-6 py-2 rounded-lg ${
+                isStepValid()
+                  ? "bg-green-600 text-white hover:bg-green-700"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
               Trimite cererea
             </button>
           )}
         </div>
       </div>
+    </div>
+
+      {/* FOOTER */}
+      <Footer />
     </div>
   );
 }
