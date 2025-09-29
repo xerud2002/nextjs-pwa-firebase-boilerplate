@@ -35,6 +35,7 @@ export default function MoveForm() {
     name: "",
     phone: "",
     email: "",
+    dismantling: "",
   });
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -66,6 +67,12 @@ export default function MoveForm() {
         name: "",
         phone: "",
         email: "",
+        dismantling: string,
+        propertyTypeTo: "",
+        roomsTo: "",
+        houseFloorsTo: "",
+        floorTo: "",
+        liftTo: "",
       });
       setStep(0);
     } catch (error) {
@@ -104,9 +111,15 @@ export default function MoveForm() {
       case 2:
         return formData.packing !== "";
       case 3:
-        return formData.stairsFrom !== "";
+        return formData.dismantling !== "";
       case 4:
-        return formData.stairsTo !== "";
+        if (formData.propertyTypeTo === "Casă") {
+          return formData.propertyTypeTo !== "" && formData.roomsTo !== "" && formData.houseFloorsTo !== "";
+        }
+        if (formData.propertyTypeTo === "Apartament" || formData.propertyTypeTo === "Office") {
+          return formData.propertyTypeTo !== "" && formData.roomsTo !== "" && formData.floorTo !== "" && (formData.floorTo === "Parter" || formData.liftTo !== "");
+        }
+      return formData.propertyTypeTo !== "" && formData.roomsTo !== "";
       case 5:
         return formData.survey !== "";
       case 6:
@@ -250,7 +263,7 @@ export default function MoveForm() {
         {step === 2 && (
           <div>
             <h2 className="text-xl font-bold mb-4">Ai nevoie de ajutor la împachetare?</h2>
-            {["Da, complet", "Doar mobilă mare", "Nu, ne ocupăm noi"].map((opt) => (
+            {["Da, complet", "Partial", "Nu, ne ocupăm noi"].map((opt) => (
               <label key={opt} className="block p-3 border rounded-lg mb-2 cursor-pointer hover:bg-gray-50">
                 <input
                   type="radio"
@@ -268,37 +281,102 @@ export default function MoveForm() {
 
         {step === 3 && (
           <div>
-            <h2 className="text-xl font-bold mb-4">La ce etaj ești la plecare?</h2>
+            <h2 className="text-xl font-bold mb-4">Ai nevoie de ajutor la demontare și reasamblare mobilier?</h2>
             <select
               className="w-full border rounded-lg p-3"
-              value={formData.stairsFrom}
-              onChange={(e) => handleChange("stairsFrom", e.target.value)}
+              value={formData.dismantling}
+              onChange={(e) => handleChange("dismantling", e.target.value)}
             >
               <option value="">Selectează...</option>
-              <option>Parter</option>
-              <option>1–3 etaje fără lift</option>
-              <option>4+ etaje fără lift</option>
-              <option>Lift disponibil</option>
+              <option value="none">Nu, nu este nevoie</option>
+              <option value="all">Da, pentru majoritatea pieselor</option>
             </select>
           </div>
         )}
 
+
         {step === 4 && (
           <div>
-            <h2 className="text-xl font-bold mb-4">La ce etaj ești la destinație?</h2>
+            <h2 className="text-xl font-bold mb-4">Tipul de proprietate la destinație</h2>
             <select
-              className="w-full border rounded-lg p-3"
-              value={formData.stairsTo}
-              onChange={(e) => handleChange("stairsTo", e.target.value)}
+              className="w-full border rounded-lg p-3 mb-3"
+              value={formData.propertyTypeTo}
+              onChange={(e) => handleChange("propertyTypeTo", e.target.value)}
             >
               <option value="">Selectează...</option>
-              <option>Parter</option>
-              <option>1–3 etaje fără lift</option>
-              <option>4+ etaje fără lift</option>
-              <option>Lift disponibil</option>
+              <option>Casă</option>
+              <option>Apartament</option>
+              <option>Office</option>
+              <option>Depozit / Storage</option>
             </select>
+
+            <h2 className="text-xl font-bold mb-4">Număr camere / spații</h2>
+            <select
+              className="w-full border rounded-lg p-3 mb-3"
+              value={formData.roomsTo}
+              onChange={(e) => handleChange("roomsTo", e.target.value)}
+            >
+              <option value="">Selectează...</option>
+              <option>Garsonieră</option>
+              <option>2 camere</option>
+              <option>3 camere</option>
+              <option>4 camere</option>
+              <option>5+ camere</option>
+            </select>
+
+            {formData.propertyTypeTo === "Casă" && (
+              <div>
+                <h2 className="text-xl font-bold mb-4">Câte etaje are casa?</h2>
+                <select
+                  className="w-full border rounded-lg p-3"
+                  value={formData.houseFloorsTo}
+                  onChange={(e) => handleChange("houseFloorsTo", e.target.value)}
+                >
+                  <option value="">Selectează...</option>
+                  <option>Parter</option>
+                  <option>Parter + 1</option>
+                  <option>Parter + 2</option>
+                  <option>3+ etaje</option>
+                </select>
+              </div>
+            )}
+
+            {(formData.propertyTypeTo === "Apartament" || formData.propertyTypeTo === "Office") && (
+              <div>
+                <h2 className="text-xl font-bold mb-4">La ce etaj este?</h2>
+                <select
+                  className="w-full border rounded-lg p-3 mb-3"
+                  value={formData.floorTo}
+                  onChange={(e) => handleChange("floorTo", e.target.value)}
+                >
+                  <option value="">Selectează...</option>
+                  <option>Parter</option>
+                  <option>Etaj 1</option>
+                  <option>Etaj 2</option>
+                  <option>Etaj 3</option>
+                  <option>4+ etaje</option>
+                </select>
+
+                {formData.floorTo !== "" && formData.floorTo !== "Parter" && (
+                  <div>
+                    <h2 className="text-xl font-bold mb-4">Există lift?</h2>
+                    <select
+                      className="w-full border rounded-lg p-3"
+                      value={formData.liftTo}
+                      onChange={(e) => handleChange("liftTo", e.target.value)}
+                    >
+                      <option value="">Selectează...</option>
+                      <option>Da</option>
+                      <option>Nu</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
+
+
 
         {step === 5 && (
           <SurveyStep
