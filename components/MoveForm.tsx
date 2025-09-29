@@ -80,16 +80,26 @@ export default function MoveForm() {
         return formData.serviceType !== "";
       case 1:
         if (formData.propertyType === "Casă") {
-          return formData.propertyType !== "" && formData.rooms !== "" && formData.houseFloors !== "";
+          return (
+            formData.propertyType !== "" &&
+            formData.rooms !== "" &&
+            formData.houseFloors !== ""
+          );
         }
-        if (formData.propertyType === "Apartament" || formData.propertyType === "Office") {
+        if (
+          formData.propertyType === "Apartament" ||
+          formData.propertyType === "Office"
+        ) {
           return (
             formData.propertyType !== "" &&
             formData.rooms !== "" &&
             formData.floor !== "" &&
             (formData.floor === "Parter" || formData.lift !== "")
           );
-        };
+        }
+        if (formData.propertyType === "Storage") {
+          return formData.propertyType !== "" && formData.rooms !== "";
+        }
         return false;
       case 2:
         return formData.packing !== "";
@@ -149,7 +159,7 @@ export default function MoveForm() {
 
         {step === 1 && (
           <div>
-            <h2 className="text-xl font-bold mb-4">Tipul de proprietate și detalii</h2>
+            <h2 className="text-xl font-bold mb-4">Tipul de proprietate și detalii colectie</h2>
 
             {/* Tip proprietate */}
             <label className="block font-medium mb-2">Tip proprietate</label>
@@ -162,6 +172,7 @@ export default function MoveForm() {
               <option>Casă</option>
               <option>Apartament</option>
               <option>Office</option>
+              <option>Storage</option>
             </select>
 
             {/* Număr camere (valabil pentru toate) */}
