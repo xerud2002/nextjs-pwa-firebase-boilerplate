@@ -28,58 +28,29 @@ export default function MoveForm() {
     return 0;
   });
 
-  const [formData, setFormData] = useState(() => {
-    if (typeof window !== "undefined") {
-      const savedData = localStorage.getItem("moveFormData");
-      return savedData
-        ? JSON.parse(savedData)
-        : {
-            serviceType: "",
-            propertyType: "",
-            rooms: "",
-            houseFloors: "",
-            floor: "",
-            lift: "",
-            packing: "",
-            stairsFrom: "",
-            stairsTo: "",
-            survey: "",
-            details: "",
-            name: "",
-            phone: "",
-            email: "",
-            dismantling: "",
-            propertyTypeTo: "",
-            roomsTo: "",
-            houseFloorsTo: "",
-            floorTo: "",
-            liftTo: "",
-            media: [] as File[],
-          };
-    }
-      return {
-        serviceType: "",
-        propertyType: "",
-        rooms: "",
-        houseFloors: "",
-        floor: "",
-        lift: "",
-        packing: "",
-        stairsFrom: "",
-        stairsTo: "",
-        survey: "",
-        details: "",
-        name: "",
-        phone: "",
-        email: "",
-        dismantling: "",
-        propertyTypeTo: "",
-        roomsTo: "",
-        houseFloorsTo: "",
-        floorTo: "",
-        liftTo: "",
-        media: [] as File[],
-      };
+  const [step, setStep] = useState(0);
+  const [formData, setFormData] = useState({
+    serviceType: "",
+    propertyType: "",
+    rooms: "",
+    houseFloors: "",
+    floor: "",
+    lift: "",
+    packing: "",
+    stairsFrom: "",
+    stairsTo: "",
+    survey: "",
+    details: "",
+    name: "",
+    phone: "",
+    email: "",
+    dismantling: "",
+    propertyTypeTo: "",
+    roomsTo: "",
+    houseFloorsTo: "",
+    floorTo: "",
+    liftTo: "",
+    media: [] as File[],
   });
 
 
@@ -96,6 +67,7 @@ export default function MoveForm() {
       setStep(Number(savedStep));
     }
   }, []);
+
 
 
   // Save progress on every change
