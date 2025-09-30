@@ -122,7 +122,7 @@ export default function MoveForm() {
         houseFloorsTo: "",
         floorTo: "",
         liftTo: "",
-        media: "",
+        media: [],
       });
       setStep(0);
     } catch (error) {
