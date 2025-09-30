@@ -294,10 +294,10 @@ export default function MoveForm() {
                     }
                   >
                     <option value="">Selectează</option>
+                    <option>Fără etaj</option>
                     <option>1 etaj</option>
                     <option>2 etaje</option>
                     <option>3 etaje</option>
-                    <option>4+ etaje</option>
                   </select>
                 </>
               )}
@@ -319,7 +319,8 @@ export default function MoveForm() {
                     <option>Etaj 1</option>
                     <option>Etaj 2</option>
                     <option>Etaj 3</option>
-                    <option>Etaj 4+</option>
+                    <option>Etaj 4</option>
+                    <option>Etaj 5+</option>
                   </select>
 
                   {formData.floor !== "" && formData.floor !== "Parter" && (
@@ -340,6 +341,25 @@ export default function MoveForm() {
                   )}
                 </>
               )}
+
+              {/* Dacă e Storage afișăm m³, altfel camere */}
+              {formData.propertyType === "Storage" ? (
+                <>
+                  <label className="block font-medium mb-2">Mărimea Storage (m³)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    className="w-full border rounded-lg p-3 mb-4"
+                    value={formData.rooms || ""}
+                    onChange={(e) => handleChange("rooms", e.target.value)}
+                    placeholder="Ex: 10"
+                  />
+                </>
+              ) : (
+                <>
+                </>
+              )}
+
             </div>
           )}
 
@@ -458,7 +478,8 @@ export default function MoveForm() {
                     <option>Etaj 1</option>
                     <option>Etaj 2</option>
                     <option>Etaj 3</option>
-                    <option>4+ etaje</option>
+                    <option>Etaj 4</option>
+                    <option>Etaj 5+</option>
                   </select>
 
                   {formData.floorTo !== "" && formData.floorTo !== "Parter" && (
