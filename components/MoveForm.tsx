@@ -1,11 +1,12 @@
 "use client";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { useState, useEffect } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { getAuth, signInAnonymously } from "firebase/auth";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+
 
 const auth = getAuth();
 await signInAnonymously(auth);
