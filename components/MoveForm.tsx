@@ -26,6 +26,18 @@ export default function MoveForm() {
   }
   return 0; // fallback pentru SSR
 });
+  
+  const [hydrated, setHydrated] = useState(false);
+
+    useEffect(() => {
+      setHydrated(true);
+    }, []);
+
+  if (!hydrated) {
+    // Sau un spinner, skeleton, etc.
+    return <div className="text-center py-10">Se încarcă...</div>;
+  }
+
 
   const [formData, setFormData] = useState<any>(() => {
     if (typeof window !== "undefined") {
@@ -82,21 +94,21 @@ export default function MoveForm() {
   });
 
   // Restore saved state after hydration
-  useEffect(() => {
-    const savedData = localStorage.getItem("moveFormData");
-    const savedStep = localStorage.getItem("moveFormStep");
+  // useEffect(() => {
+  //   const savedData = localStorage.getItem("moveFormData");
+  //   const savedStep = localStorage.getItem("moveFormStep");
 
-    if (savedData) {
-      try {
-        setFormData(JSON.parse(savedData));
-      } catch (err) {
-        console.error("Failed to parse saved form data", err);
-      }
-    }
-    if (savedStep) {
-      setStep(Number(savedStep));
-    }
-  }, []);
+  //   if (savedData) {
+  //     try {
+  //       setFormData(JSON.parse(savedData));
+  //     } catch (err) {
+  //       console.error("Failed to parse saved form data", err);
+  //     }
+  //   }
+  //   if (savedStep) {
+  //     setStep(Number(savedStep));
+  //   }
+  // }, []);
 
   // Persist to localStorage on every change
   useEffect(() => {

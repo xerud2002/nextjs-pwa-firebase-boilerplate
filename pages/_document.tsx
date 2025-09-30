@@ -11,7 +11,6 @@ export default class MyDocument extends Document {
       <Html lang={locale}>
         <Head>
           <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
           {/* <title>Oferte Mutare</title> */}
         </Head>
 
@@ -23,3 +22,19 @@ export default class MyDocument extends Document {
     )
   }
 }
+
+
+// import Head from "next/head";
+
+// function MyApp({ Component, pageProps }: AppProps) {
+//   return (
+//     <>
+//       <Head>
+//         <meta name="viewport" content="width=device-width, initial-scale=1" />
+//       </Head>
+//       <Component {...pageProps} />
+//     </>
+//   );
+// }
+
+// export default MyApp;
