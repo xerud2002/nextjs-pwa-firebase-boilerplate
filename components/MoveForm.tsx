@@ -1,9 +1,7 @@
 "use client";
-
 import { useState, useEffect } from "react";
+import { db } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { storage, db } from "../utils/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import SurveyStep from "./SurveyStep";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -20,16 +18,9 @@ const steps = [
 ];
 
 export default function MoveForm() {
-  const [step, setStep] = useState(() => {
-    if (typeof window !== "undefined") {
-      const savedStep = localStorage.getItem("moveFormStep");
-      return savedStep ? Number(savedStep) : 0;
-    }
-    return 0;
-  });
-
-  const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState({
+  // Start with safe defaults
+  const [step, setStep] = useState<number>(0);
+  const [formData, setFormData] = useState<any>({
     serviceType: "",
     propertyType: "",
     rooms: "",
@@ -53,70 +44,48 @@ export default function MoveForm() {
     media: [] as File[],
   });
 
-
-  
-  // Restore progress when page loads
+  // Restore saved state after hydration
   useEffect(() => {
     const savedData = localStorage.getItem("moveFormData");
     const savedStep = localStorage.getItem("moveFormStep");
 
     if (savedData) {
-      setFormData(JSON.parse(savedData));
+      try {
+        setFormData(JSON.parse(savedData));
+      } catch (err) {
+        console.error("Failed to parse saved form data", err);
+      }
     }
     if (savedStep) {
       setStep(Number(savedStep));
     }
   }, []);
 
-
-
-  // Save progress on every change
+  // Persist to localStorage on every change
   useEffect(() => {
     localStorage.setItem("moveFormData", JSON.stringify(formData));
+  }, [formData]);
+
+  useEffect(() => {
     localStorage.setItem("moveFormStep", step.toString());
-  }, [formData, step]);
-
-
-
+  }, [step]);
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
 
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (field: string, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
     try {
-      let mediaUrls: string[] = [];
-
-      if (formData.media && Array.isArray(formData.media) && formData.media.length > 0) {
-        // Upload fiecare fișier în Firebase Storage
-        mediaUrls = await Promise.all(
-          formData.media.map(async (file) => {
-            const storageRef = ref(
-              storage,
-              `requests/${Date.now()}_${file.name}`
-            );
-            await uploadBytes(storageRef, file);
-            return await getDownloadURL(storageRef);
-          })
-        );
-      }
-
-      // Salvează în Firestore
       await addDoc(collection(db, "requests"), {
         ...formData,
-        media: mediaUrls, // înlocuim File[] cu URL-uri
         createdAt: Timestamp.now(),
       });
-
       alert("✅ Cererea a fost salvată cu succes!");
 
-      // Golește form + localStorage
-      localStorage.removeItem("moveFormData");
-      localStorage.removeItem("moveFormStep");
-
+      // Reset
       setFormData({
         serviceType: "",
         propertyType: "",
@@ -138,7 +107,7 @@ export default function MoveForm() {
         houseFloorsTo: "",
         floorTo: "",
         liftTo: "",
-        media: [],
+        media: [] as File[],
       });
       setStep(0);
       localStorage.removeItem("moveFormData");
@@ -149,27 +118,31 @@ export default function MoveForm() {
     }
   };
 
-
   const isStepValid = () => {
     switch (step) {
       case 0:
         return formData.serviceType !== "";
       case 1:
         if (formData.propertyType === "Casă") {
-          return formData.rooms !== "" && formData.houseFloors !== "";
+          return (
+            formData.propertyType !== "" &&
+            formData.rooms !== "" &&
+            formData.houseFloors !== ""
+          );
         }
         if (
           formData.propertyType === "Apartament" ||
           formData.propertyType === "Office"
         ) {
           return (
+            formData.propertyType !== "" &&
             formData.rooms !== "" &&
             formData.floor !== "" &&
             (formData.floor === "Parter" || formData.lift !== "")
           );
         }
         if (formData.propertyType === "Storage") {
-          return formData.rooms !== "";
+          return formData.propertyType !== "" && formData.rooms !== "";
         }
         return false;
       case 2:
@@ -178,13 +151,18 @@ export default function MoveForm() {
         return formData.dismantling !== "";
       case 4:
         if (formData.propertyTypeTo === "Casă") {
-          return formData.roomsTo !== "" && formData.houseFloorsTo !== "";
+          return (
+            formData.propertyTypeTo !== "" &&
+            formData.roomsTo !== "" &&
+            formData.houseFloorsTo !== ""
+          );
         }
         if (
           formData.propertyTypeTo === "Apartament" ||
           formData.propertyTypeTo === "Office"
         ) {
           return (
+            formData.propertyTypeTo !== "" &&
             formData.roomsTo !== "" &&
             formData.floorTo !== "" &&
             (formData.floorTo === "Parter" || formData.liftTo !== "")
@@ -194,7 +172,7 @@ export default function MoveForm() {
       case 5:
         return formData.survey !== "";
       case 6:
-        return true; // optional
+        return true;
       case 7:
         return (
           formData.name !== "" &&
@@ -208,7 +186,6 @@ export default function MoveForm() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* HEADER */}
       <Navbar />
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
