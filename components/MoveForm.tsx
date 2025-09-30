@@ -45,7 +45,8 @@ export default function MoveForm() {
     media: [] as File[],
   });
 
-  // Restore from localStorage when component mounts
+  
+  // Restore progress when page loads
   useEffect(() => {
     const savedData = localStorage.getItem("moveFormData");
     const savedStep = localStorage.getItem("moveFormStep");
@@ -58,11 +59,13 @@ export default function MoveForm() {
     }
   }, []);
 
-  // Save progress to localStorage whenever step or formData changes
+
+  // Save progress on every change
   useEffect(() => {
     localStorage.setItem("moveFormData", JSON.stringify(formData));
     localStorage.setItem("moveFormStep", step.toString());
   }, [formData, step]);
+
 
 
 
