@@ -285,7 +285,7 @@ export default function MoveForm() {
           {step === 1 && (
             <div>
               <h2 className="text-xl font-bold mb-4">
-                Tipul de proprietate și detalii colectare
+                Tipul de proprietate și detalii colecție
               </h2>
 
               {/* Tip proprietate */}
@@ -395,46 +395,66 @@ export default function MoveForm() {
           )}
           {step === 2 && (
             <div>
-              <h2 className="text-xl font-bold mb-4">
-                Ai nevoie de ajutor la împachetare?
-              </h2>
-              {["Da, complet", "Parțial", "Nu, ne ocupăm noi"].map((opt) => (
-                <label
-                  key={opt}
-                  className="block p-3 border rounded-lg mb-2 cursor-pointer hover:bg-gray-50"
-                >
-                  <input
-                    type="radio"
-                    name="packing"
-                    value={opt}
-                    checked={formData.packing === opt}
-                    onChange={(e) => handleChange("packing", e.target.value)}
-                    className="mr-2 text-green-600"
-                  />
-                  {opt}
-                </label>
-              ))}
+              <h2 className="text-xl font-bold mb-4">Adresa completă de colecție</h2>
+              
+              <input
+                type="text"
+                placeholder="Județ"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.pickupCounty || ""}
+                onChange={(e) => handleChange("pickupCounty", e.target.value)}
+              />
+              
+              <input
+                type="text"
+                placeholder="Oraș / Localitate"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.pickupCity || ""}
+                onChange={(e) => handleChange("pickupCity", e.target.value)}
+              />
+              
+              <input
+                type="text"
+                placeholder="Stradă"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.pickupStreet || ""}
+                onChange={(e) => handleChange("pickupStreet", e.target.value)}
+              />
+              
+              <input
+                type="text"
+                placeholder="Număr"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.pickupNumber || ""}
+                onChange={(e) => handleChange("pickupNumber", e.target.value)}
+              />
+
+              <input
+                type="text"
+                placeholder="Bloc / Scara / Etaj / Apartament (opțional)"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.pickupDetails || ""}
+                onChange={(e) => handleChange("pickupDetails", e.target.value)}
+              />
+              
+              <input
+                type="text"
+                placeholder="Cod poștal"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.pickupPostal || ""}
+                onChange={(e) => handleChange("pickupPostal", e.target.value)}
+              />
+
+              <textarea
+                className="w-full border rounded-lg p-3 mb-3"
+                rows={3}
+                placeholder="Instrucțiuni speciale pentru acces (ex: barieră, stradă îngustă...)"
+                value={formData.pickupInstructions || ""}
+                onChange={(e) => handleChange("pickupInstructions", e.target.value)}
+              />
             </div>
           )}
           {step === 3 && (
-            <div>
-              <h2 className="text-xl font-bold mb-4">
-                Ai nevoie de ajutor la demontare și reasamblare mobilier?
-              </h2>
-              <select
-                className="w-full border rounded-lg p-3"
-                value={formData.dismantling}
-                onChange={(e) => handleChange("dismantling", e.target.value)}
-              >
-                <option value="">Selectează...</option>
-                <option value="none">Nu, nu este nevoie</option>
-                <option value="all">
-                  Da, pentru majoritatea pieselor
-                </option>
-              </select>
-            </div>
-          )}
-          {step === 4 && (
             <div>
               <h2 className="text-xl font-bold mb-4">
                 Tipul de proprietate la destinație
@@ -471,7 +491,7 @@ export default function MoveForm() {
                     </>
                   ) : (
                     <>
-                      <label className="block font-medium mb-2">Număr camere / spații</label>
+                      <label className="block font-medium mb-2">Număr camere</label>
                       <select
                         className="w-full border rounded-lg p-3 mb-3"
                         value={formData.roomsTo}
@@ -545,7 +565,162 @@ export default function MoveForm() {
                 )}
             </div>
           )}
+          {step === 4 && (
+            <div>
+              <h2 className="text-xl font-bold mb-4">Adresa completă de livrare</h2>
+              
+              <input
+                type="text"
+                placeholder="Județ"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.deliveryCounty || ""}
+                onChange={(e) => handleChange("deliveryCounty", e.target.value)}
+              />
+              
+              <input
+                type="text"
+                placeholder="Oraș / Localitate"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.deliveryCity || ""}
+                onChange={(e) => handleChange("deliveryCity", e.target.value)}
+              />
+              
+              <input
+                type="text"
+                placeholder="Stradă"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.deliveryStreet || ""}
+                onChange={(e) => handleChange("deliveryStreet", e.target.value)}
+              />
+              
+              <input
+                type="text"
+                placeholder="Număr"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.deliveryNumber || ""}
+                onChange={(e) => handleChange("deliveryNumber", e.target.value)}
+              />
+
+              <input
+                type="text"
+                placeholder="Bloc / Scara / Etaj / Apartament (opțional)"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.deliveryDetails || ""}
+                onChange={(e) => handleChange("deliveryDetails", e.target.value)}
+              />
+              
+              <input
+                type="text"
+                placeholder="Cod poștal"
+                className="w-full border rounded-lg p-3 mb-3"
+                value={formData.deliveryPostal || ""}
+                onChange={(e) => handleChange("deliveryPostal", e.target.value)}
+              />
+
+              <textarea
+                className="w-full border rounded-lg p-3 mb-3"
+                rows={3}
+                placeholder="Instrucțiuni speciale pentru acces (ex: interfon, zonă cu restricții...)"
+                value={formData.deliveryInstructions || ""}
+                onChange={(e) => handleChange("deliveryInstructions", e.target.value)}
+              />
+            </div>
+          )}
           {step === 5 && (
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="text-xl font-bold mb-4 text-center">
+                Când dorești să aibă loc mutarea?
+              </h2>
+
+              {/* Calendar pentru o singură dată */}
+              <Calendar
+                value={formData.moveDate || ""}
+                onChange={(date) => {
+                  const toIsoDate = (d: any) => {
+                    if (!d) return "";
+                    if (typeof d === "string") return d;
+                    if (typeof d?.format === "function") {
+                      return d.format("YYYY-MM-DD");
+                    }
+                    try {
+                      return new Date(d).toISOString().slice(0, 10);
+                    } catch {
+                      return "";
+                    }
+                  };
+                  handleChange("moveDate", toIsoDate(date));
+                  handleChange("moveOption", "");
+                }}
+                className="custom-calendar text-lg relative z-40"
+              />
+
+
+              {/* Opțiuni alternative */}
+              <div className="w-full flex flex-col space-y-3">
+                {["Sunt flexibil cu data mutării", "Încă nu știu data mutării"].map((opt) => (
+                  <label
+                    key={opt}
+                    className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
+                  >
+                    <input
+                      type="radio"
+                      name="moveOption"
+                      value={opt}
+                      checked={formData.moveOption === opt}
+                      onChange={(e) => {
+                        handleChange("moveOption", e.target.value);
+                        handleChange("moveDate", ""); // șterge data selectată dacă există
+                      }}
+                      className="mr-2"
+                    />
+                    {opt}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+          {step === 6 && (
+            <div>
+              <h2 className="text-xl font-bold mb-4">
+                Ai nevoie de ajutor la împachetare?
+              </h2>
+              {["Da, complet", "Parțial", "Nu, ne ocupăm noi"].map((opt) => (
+                <label
+                  key={opt}
+                  className="block p-3 border rounded-lg mb-2 cursor-pointer hover:bg-gray-50"
+                >
+                  <input
+                    type="radio"
+                    name="packing"
+                    value={opt}
+                    checked={formData.packing === opt}
+                    onChange={(e) => handleChange("packing", e.target.value)}
+                    className="mr-2 text-green-600"
+                  />
+                  {opt}
+                </label>
+              ))}
+            </div>
+          )}
+          {step === 7 && (
+            <div>
+              <h2 className="text-xl font-bold mb-4">
+                Ai nevoie de ajutor la demontare și reasamblare mobilier?
+              </h2>
+              <select
+                className="w-full border rounded-lg p-3"
+                value={formData.dismantling}
+                onChange={(e) => handleChange("dismantling", e.target.value)}
+              >
+                <option value="">Selectează...</option>
+                <option value="none">Nu, nu este nevoie</option>
+                <option value="all">
+                  Da, pentru majoritatea pieselor
+                </option>
+              </select>
+            </div>
+          )}
+          {step === 8 && (
             <div>
               <h2 className="text-lg font-semibold mb-4">
                 Pentru o ofertă cât mai exactă, ești dispus să faci un survey?
@@ -642,69 +817,7 @@ export default function MoveForm() {
               </div>
             </div>
           )}
-{step === 6 && (
-  <div className="flex flex-col items-center justify-center">
-    <h2 className="text-xl font-bold mb-4 text-center">
-      Când dorești să aibă loc mutarea?
-    </h2>
-
-    {/* Calendar pentru o singură dată */}
-    <Calendar
-      value={formData.moveDate || ""}
-      onChange={(date) => {
-        const toIsoDate = (d: any) => {
-          if (!d) return "";
-          if (typeof d === "string") return d;
-          if (typeof d?.format === "function") {
-            return d.format("YYYY-MM-DD");
-          }
-          try {
-            return new Date(d).toISOString().slice(0, 10);
-          } catch {
-            return "";
-          }
-        };
-        handleChange("moveDate", toIsoDate(date));
-        handleChange("moveOption", "");
-      }}
-      className="custom-calendar text-lg relative z-40"
-    />
-
-
-    {/* Opțiuni alternative */}
-    <div className="w-full flex flex-col space-y-3">
-      {["Sunt flexibil cu data mutării", "Încă nu știu data mutării"].map((opt) => (
-        <label
-          key={opt}
-          className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50"
-        >
-          <input
-            type="radio"
-            name="moveOption"
-            value={opt}
-            checked={formData.moveOption === opt}
-            onChange={(e) => {
-              handleChange("moveOption", e.target.value);
-              handleChange("moveDate", ""); // șterge data selectată dacă există
-            }}
-            className="mr-2"
-          />
-          {opt}
-        </label>
-      ))}
-    </div>
-  </div>
-)}
-
-
-
-
-
-
-
-
-
-          {step === 7 && (
+          {step === 9 && (
             <div>
               <h2 className="text-xl font-bold mb-4">Datele tale de contact</h2>
               <input
@@ -730,6 +843,8 @@ export default function MoveForm() {
               />
             </div>
           )}
+
+
           {/* Navigation */}
           <div className="mt-6 flex justify-between">
             {step > 0 && (
