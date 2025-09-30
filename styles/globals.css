@@ -8,7 +8,7 @@ body {
 }
 
 .custom-calendar {
-  transform: scale(1.40);   /* mărește cu 20% */
+  transform: scale(1.40);
   transform-origin: center;
   margin: 70px;
   position: relative !important;
