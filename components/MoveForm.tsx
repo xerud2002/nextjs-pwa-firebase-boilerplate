@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { getAuth, signInAnonymously } from "firebase/auth";
+import emailjs from "@emailjs/browser"; // sau nodemailer pe backend
 
 const steps = [
   "Tip serviciu",
@@ -74,37 +75,32 @@ export default function MoveForm() {
 
     setHydrated(true);
   }, []);
-
   // ✅ Save progress to localStorage
   useEffect(() => {
     if (hydrated) {
       localStorage.setItem("moveFormStep", step.toString());
     }
   }, [step, hydrated]);
-
   useEffect(() => {
     if (hydrated) {
       localStorage.setItem("moveFormData", JSON.stringify(formData));
     }
   }, [formData, hydrated]);
-
   if (!hydrated) {
     return <div className="text-center py-10">Se încarcă...</div>;
   }
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
-
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
-
   const handleSubmit = async () => {
     try {
       let mediaUrls: string[] = [];
 
-      // dacă există fișiere, le urcăm în Storage
-      if (formData.media && formData.media.length > 0) {
+      // dacă există fișiere și a selectat "media" (acum)
+      if (formData.media && formData.media.length > 0 && formData.survey === "media") {
         mediaUrls = await Promise.all(
           formData.media.map(async (file: File) => {
             const storageRef = ref(storage, `uploads/${Date.now()}-${file.name}`);
@@ -114,11 +110,28 @@ export default function MoveForm() {
         );
       }
 
-      await addDoc(collection(db, "requests"), {
+      // adăugăm cererea în Firestore
+      const docRef = await addDoc(collection(db, "requests"), {
         ...formData,
         media: mediaUrls, // înlocuim File[] cu URL[]
         createdAt: Timestamp.now(),
       });
+
+      // dacă a ales "media_later", trimitem email cu linkul de upload
+      if (formData.survey === "media_later") {
+        const uploadLink = `${window.location.origin}/upload/${docRef.id}`;
+
+        await emailjs.send(
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+          {
+            to_email: formData.email,
+            to_name: formData.name || "Client",
+            upload_link: uploadLink,
+          },
+          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+        );
+      }
 
       alert("✅ Cererea a fost salvată cu succes!");
       setFormData(defaultFormData);
@@ -130,8 +143,7 @@ export default function MoveForm() {
       alert("❌ A apărut o eroare la salvarea cererii.");
     }
   };
-
-    const isStepValid = () => {
+  const isStepValid = () => {
     switch (step) {
       case 0:
         return formData.serviceType !== "";
@@ -214,7 +226,6 @@ export default function MoveForm() {
               />
             </div>
           </div>
-
           {/* Step content */}
           {step === 0 && (
             <div>
@@ -245,7 +256,6 @@ export default function MoveForm() {
               ))}
             </div>
           )}
-
           {step === 1 && (
             <div>
               <h2 className="text-xl font-bold mb-4">
@@ -509,7 +519,7 @@ export default function MoveForm() {
                 )}
             </div>
           )}
-            {step === 5 && (
+          {step === 5 && (
             <div>
               <h2 className="text-lg font-semibold mb-4">
                 Pentru o ofertă cât mai exactă, ești dispus să faci un survey?
@@ -526,7 +536,7 @@ export default function MoveForm() {
                     }
                     className="mr-2"
                   />
-                  Da, prin video call (WhatsApp / Zoom)
+                  Da, prin video call (WhatsApp / Facebook ...)
                 </label>
 
                 <label className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
@@ -606,8 +616,6 @@ export default function MoveForm() {
               </div>
             </div>
           )}
-
-
           {step === 6 && (
             <div>
               <h2 className="text-xl font-bold mb-4">
@@ -622,7 +630,6 @@ export default function MoveForm() {
               />
             </div>
           )}
-
           {step === 7 && (
             <div>
               <h2 className="text-xl font-bold mb-4">Datele tale de contact</h2>
@@ -649,7 +656,6 @@ export default function MoveForm() {
               />
             </div>
           )}
-
           {/* Navigation */}
           <div className="mt-6 flex justify-between">
             {step > 0 && (
