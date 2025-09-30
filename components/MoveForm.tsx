@@ -1,9 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import { db } from "../utils/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { getAuth, signInAnonymously } from "firebase/auth";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+
+const auth = getAuth();
+await signInAnonymously(auth);
 
 const steps = [
   "Tip serviciu",
@@ -90,13 +95,26 @@ export default function MoveForm() {
 
   const handleSubmit = async () => {
     try {
+      let mediaUrls: string[] = [];
+
+      // dacă există fișiere, le urcăm în Storage
+      if (formData.media && formData.media.length > 0) {
+        mediaUrls = await Promise.all(
+          formData.media.map(async (file: File) => {
+            const storageRef = ref(storage, `uploads/${Date.now()}-${file.name}`);
+            await uploadBytes(storageRef, file);
+            return await getDownloadURL(storageRef);
+          })
+        );
+      }
+
       await addDoc(collection(db, "requests"), {
         ...formData,
+        media: mediaUrls, // înlocuim File[] cu URL[]
         createdAt: Timestamp.now(),
       });
-      alert("✅ Cererea a fost salvată cu succes!");
 
-      // Reset
+      alert("✅ Cererea a fost salvată cu succes!");
       setFormData(defaultFormData);
       setStep(0);
       localStorage.removeItem("moveFormData");
@@ -107,7 +125,7 @@ export default function MoveForm() {
     }
   };
 
-  const isStepValid = () => {
+    const isStepValid = () => {
     switch (step) {
       case 0:
         return formData.serviceType !== "";
