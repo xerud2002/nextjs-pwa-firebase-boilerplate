@@ -12,15 +12,18 @@ import { Calendar, DateObject } from "react-multi-date-picker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const steps = [
-  "Tip serviciu",
-  "Dimensiunea mutării",
-  "Împachetare",
-  "Demontare",
-  "Detalii destinație",
-  "Survey estimare",
-  "Detalii suplimentare",
-  "Date contact",
+  "Tip serviciu",                 // 0
+  "Dimensiunea mutării",          // 1
+  "Detalii colectare",            // 2
+  "Adresa livrare",               // 3
+  "Detalii livrare",              // 4
+  "Data mutării",                 // 5
+  "Împachetare",                  // 6
+  "Demontare",                    // 7
+  "Survey estimare",              // 8
+  "Date de contact"               // 9
 ];
+
 
 export default function MoveForm() {
   const [hydrated, setHydrated] = useState(false);
