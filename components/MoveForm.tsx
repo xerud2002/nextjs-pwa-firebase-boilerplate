@@ -7,9 +7,8 @@ import { db, storage } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { getAuth, signInAnonymously } from "firebase/auth";
 import emailjs from "@emailjs/browser";
-// import DatePicker from "react-datepicker";
 import { Calendar, DateObject } from "react-multi-date-picker";
-import "react-datepicker/dist/react-datepicker.css";
+// import "react-datepicker/dist/react-datepicker.css";
 
 const steps = [
   "Tip serviciu",                 // 0
@@ -59,7 +58,6 @@ export default function MoveForm() {
     houseFloorsTo: "",
     floorTo: "",
     liftTo: "",
-    media: [] as File[],
     moveDate: "",
     moveOption: "",
     pickupCounty: "",
@@ -76,6 +74,7 @@ export default function MoveForm() {
     deliveryDetails: "",
     deliveryPostal: "",
     deliveryInstructions: "",
+     media: [] as File[],
   };
 
   const [step, setStep] = useState<number>(0);
