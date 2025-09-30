@@ -612,7 +612,7 @@ export default function MoveForm() {
             </div>
           )}
 
-          {/* Navigation buttons */}
+          {/* Navigation */}
           <div className="mt-6 flex justify-between">
             {step > 0 && (
               <button
@@ -651,7 +651,6 @@ export default function MoveForm() {
           </div>
         </div>
       </div>
-      {/* FOOTER */}
       <Footer />
     </div>
   );
