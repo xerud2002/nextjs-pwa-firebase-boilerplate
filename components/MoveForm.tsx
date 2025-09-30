@@ -8,18 +8,24 @@ import SurveyStep from "./SurveyStep";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-// Restore from localStorage when component mounts
-useEffect(() => {
-  const savedData = localStorage.getItem("moveFormData");
-  const savedStep = localStorage.getItem("moveFormStep");
+  // Restore data from localStorage when component mounts
+  useEffect(() => {
+    const savedData = localStorage.getItem("moveFormData");
+    const savedStep = localStorage.getItem("moveFormStep");
 
-  if (savedData) {
-    setFormData(JSON.parse(savedData));
-  }
-  if (savedStep) {
-    setStep(Number(savedStep));
-  }
-}, []);
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+    if (savedStep) {
+      setStep(Number(savedStep));
+    }
+  }, []);
+
+  // Save data on every change
+  useEffect(() => {
+    localStorage.setItem("moveFormData", JSON.stringify(formData));
+    localStorage.setItem("moveFormStep", step.toString());
+  }, [formData, step]);
 
 const steps = [
   "Tip serviciu",
@@ -55,7 +61,6 @@ export default function MoveForm() {
     houseFloorsTo: "",
     floorTo: "",
     liftTo: "",
-     media: "",
   });
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
