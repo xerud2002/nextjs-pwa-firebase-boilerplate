@@ -7,10 +7,6 @@ import { db, storage } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { getAuth, signInAnonymously } from "firebase/auth";
 
-
-const auth = getAuth();
-await signInAnonymously(auth);
-
 const steps = [
   "Tip serviciu",
   "Dimensiunea mutării",
