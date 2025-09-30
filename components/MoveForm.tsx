@@ -25,6 +25,15 @@ const steps = [
 export default function MoveForm() {
   const [hydrated, setHydrated] = useState(false);
 
+  useEffect(() => {
+    const auth = getAuth();
+    signInAnonymously(auth)
+      .then(() => console.log("✅ User anonim autentificat"))
+      .catch((err) => console.error("❌ Eroare la autentificare anonimă:", err));
+    
+    setHydrated(true);
+  }, []);
+
   // default values
   const defaultFormData = {
     serviceType: "",
