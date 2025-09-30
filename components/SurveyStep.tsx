@@ -1,9 +1,11 @@
+import React from "react";
+
 interface SurveyStepProps {
   value: string;
   onChange: (val: string) => void;
 }
 
-export default function SurveyStep({ value, onChange }: SurveyStepProps) {
+const SurveyStep: React.FC<SurveyStepProps> = ({ value, onChange }) => {
   const options = [
     { label: " Da, prin video call (WhatsApp / Facebook)", value: "video" },
     { label: " Da, vizită în persoană", value: "in_person" },
@@ -13,16 +15,15 @@ export default function SurveyStep({ value, onChange }: SurveyStepProps) {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">
-        Pentru o ofertă cât mai exactă, ești dispus să faci un survey?
-      </h3>
-
+      <h2 className="text-xl font-bold mb-4">
+        Cum preferi să obții o estimare corectă?
+      </h2>
       <div className="space-y-3">
         {options.map((opt) => (
           <label
             key={opt.value}
-            className={`flex items-center space-x-3 border rounded-lg p-3 cursor-pointer ${
-              value === opt.value ? "border-green-500 bg-green-50" : "border-gray-300"
+            className={`block border p-3 rounded-lg cursor-pointer ${
+              value === opt.value ? "border-green-500" : "border-gray-300"
             }`}
           >
             <input
@@ -31,12 +32,14 @@ export default function SurveyStep({ value, onChange }: SurveyStepProps) {
               value={opt.value}
               checked={value === opt.value}
               onChange={(e) => onChange(e.target.value)}
-              className="w-4 h-4 text-green-600"
+              className="hidden"
             />
-            <span>{opt.label}</span>
+            {opt.label}
           </label>
         ))}
       </div>
     </div>
   );
-}
+};
+
+export default SurveyStep;

@@ -8,25 +8,6 @@ import SurveyStep from "./SurveyStep";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-  // Restore data from localStorage when component mounts
-  useEffect(() => {
-    const savedData = localStorage.getItem("moveFormData");
-    const savedStep = localStorage.getItem("moveFormStep");
-
-    if (savedData) {
-      setFormData(JSON.parse(savedData));
-    }
-    if (savedStep) {
-      setStep(Number(savedStep));
-    }
-  }, []);
-
-  // Save data on every change
-  useEffect(() => {
-    localStorage.setItem("moveFormData", JSON.stringify(formData));
-    localStorage.setItem("moveFormStep", step.toString());
-  }, [formData, step]);
-
 const steps = [
   "Tip serviciu",
   "Dimensiunea mutării",
@@ -61,7 +42,29 @@ export default function MoveForm() {
     houseFloorsTo: "",
     floorTo: "",
     liftTo: "",
+    media: [] as File[],
   });
+
+  // Restore from localStorage when component mounts
+  useEffect(() => {
+    const savedData = localStorage.getItem("moveFormData");
+    const savedStep = localStorage.getItem("moveFormStep");
+
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+    if (savedStep) {
+      setStep(Number(savedStep));
+    }
+  }, []);
+
+  // Save progress to localStorage whenever step or formData changes
+  useEffect(() => {
+    localStorage.setItem("moveFormData", JSON.stringify(formData));
+    localStorage.setItem("moveFormStep", step.toString());
+  }, [formData, step]);
+
+
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
@@ -125,6 +128,8 @@ export default function MoveForm() {
         media: [],
       });
       setStep(0);
+      localStorage.removeItem("moveFormData");
+      localStorage.removeItem("moveFormStep");
     } catch (error) {
       console.error("Eroare la salvare:", error);
       alert("❌ A apărut o eroare la salvarea cererii.");
@@ -138,25 +143,20 @@ export default function MoveForm() {
         return formData.serviceType !== "";
       case 1:
         if (formData.propertyType === "Casă") {
-          return (
-            formData.propertyType !== "" &&
-            formData.rooms !== "" &&
-            formData.houseFloors !== ""
-          );
+          return formData.rooms !== "" && formData.houseFloors !== "";
         }
         if (
           formData.propertyType === "Apartament" ||
           formData.propertyType === "Office"
         ) {
           return (
-            formData.propertyType !== "" &&
             formData.rooms !== "" &&
             formData.floor !== "" &&
             (formData.floor === "Parter" || formData.lift !== "")
           );
         }
         if (formData.propertyType === "Storage") {
-          return formData.propertyType !== "" && formData.rooms !== "";
+          return formData.rooms !== "";
         }
         return false;
       case 2:
@@ -165,18 +165,13 @@ export default function MoveForm() {
         return formData.dismantling !== "";
       case 4:
         if (formData.propertyTypeTo === "Casă") {
-          return (
-            formData.propertyTypeTo !== "" &&
-            formData.roomsTo !== "" &&
-            formData.houseFloorsTo !== ""
-          );
+          return formData.roomsTo !== "" && formData.houseFloorsTo !== "";
         }
         if (
           formData.propertyTypeTo === "Apartament" ||
           formData.propertyTypeTo === "Office"
         ) {
           return (
-            formData.propertyTypeTo !== "" &&
             formData.roomsTo !== "" &&
             formData.floorTo !== "" &&
             (formData.floorTo === "Parter" || formData.liftTo !== "")
@@ -559,7 +554,7 @@ export default function MoveForm() {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          media: Array.from(e.target.files),
+                          media: e.target.files ? Array.from(e.target.files) : [],
                         })
                       }
                       className="block w-full text-sm text-gray-700 border rounded cursor-pointer focus:outline-none focus:ring focus:ring-green-200"
