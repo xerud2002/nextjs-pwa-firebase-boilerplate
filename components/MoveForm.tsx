@@ -20,30 +20,68 @@ const steps = [
 ];
 
 export default function MoveForm() {
-  const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState({
-    serviceType: "",
-    propertyType: "",
-    rooms: "",
-    houseFloors: "",
-    floor: "",
-    lift: "",
-    packing: "",
-    stairsFrom: "",
-    stairsTo: "",
-    survey: "",
-    details: "",
-    name: "",
-    phone: "",
-    email: "",
-    dismantling: "",
-    propertyTypeTo: "",
-    roomsTo: "",
-    houseFloorsTo: "",
-    floorTo: "",
-    liftTo: "",
-    media: [] as File[],
+  const [step, setStep] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedStep = localStorage.getItem("moveFormStep");
+      return savedStep ? Number(savedStep) : 0;
+    }
+    return 0;
   });
+
+  const [formData, setFormData] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem("moveFormData");
+      return savedData
+        ? JSON.parse(savedData)
+        : {
+            serviceType: "",
+            propertyType: "",
+            rooms: "",
+            houseFloors: "",
+            floor: "",
+            lift: "",
+            packing: "",
+            stairsFrom: "",
+            stairsTo: "",
+            survey: "",
+            details: "",
+            name: "",
+            phone: "",
+            email: "",
+            dismantling: "",
+            propertyTypeTo: "",
+            roomsTo: "",
+            houseFloorsTo: "",
+            floorTo: "",
+            liftTo: "",
+            media: [] as File[],
+          };
+    }
+      return {
+        serviceType: "",
+        propertyType: "",
+        rooms: "",
+        houseFloors: "",
+        floor: "",
+        lift: "",
+        packing: "",
+        stairsFrom: "",
+        stairsTo: "",
+        survey: "",
+        details: "",
+        name: "",
+        phone: "",
+        email: "",
+        dismantling: "",
+        propertyTypeTo: "",
+        roomsTo: "",
+        houseFloorsTo: "",
+        floorTo: "",
+        liftTo: "",
+        media: [] as File[],
+      };
+  });
+
 
   
   // Restore progress when page loads
