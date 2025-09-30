@@ -342,7 +342,7 @@ export default function MoveForm() {
                 </>
               )}
 
-              {/* Dacă e Storage afișăm m³, altfel camere */}
+              {/* Condiție pentru camere vs m³ */}
               {formData.propertyType === "Storage" ? (
                 <>
                   <label className="block font-medium mb-2">Mărimea Storage (m³)</label>
@@ -352,14 +352,26 @@ export default function MoveForm() {
                     className="w-full border rounded-lg p-3 mb-4"
                     value={formData.rooms || ""}
                     onChange={(e) => handleChange("rooms", e.target.value)}
-                    placeholder="Ex: 10"
+                    placeholder="Ex: 12"
                   />
                 </>
               ) : (
                 <>
+                  <label className="block font-medium mb-2">Număr de camere</label>
+                  <select
+                    className="w-full border rounded-lg p-3 mb-4"
+                    value={formData.rooms || ""}
+                    onChange={(e) => handleChange("rooms", e.target.value)}
+                  >
+                    <option value="">Selectează</option>
+                    <option>1 cameră</option>
+                    <option>2 camere</option>
+                    <option>3 camere</option>
+                    <option>4 camere</option>
+                    <option>5+ camere</option>
+                  </select>
                 </>
               )}
-
             </div>
           )}
 
@@ -501,6 +513,36 @@ export default function MoveForm() {
                     </>
                   )}
                 </>
+              )}
+
+              {formData.propertyTypeTo === "Storage" ? (
+                  <>
+                    <label className="block font-medium mb-2">Mărimea Storage (m³)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      className="w-full border rounded-lg p-3 mb-4"
+                      value={formData.roomsTo || ""}
+                      onChange={(e) => handleChange("roomsTo", e.target.value)}
+                      placeholder="Ex: 20"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <label className="block font-medium mb-2">Număr camere / spații</label>
+                    <select
+                      className="w-full border rounded-lg p-3 mb-3"
+                      value={formData.roomsTo}
+                      onChange={(e) => handleChange("roomsTo", e.target.value)}
+                    >
+                      <option value="">Selectează...</option>
+                      <option>1 cameră</option>
+                      <option>2 camere</option>
+                      <option>3 camere</option>
+                      <option>4 camere</option>
+                      <option>5+ camere</option>
+                    </select>
+                  </>
               )}
             </div>
           )}
