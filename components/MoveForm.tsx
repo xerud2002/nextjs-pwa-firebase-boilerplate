@@ -19,29 +19,66 @@ const steps = [
 
 export default function MoveForm() {
   // Start with safe defaults
-  const [step, setStep] = useState<number>(0);
-  const [formData, setFormData] = useState<any>({
-    serviceType: "",
-    propertyType: "",
-    rooms: "",
-    houseFloors: "",
-    floor: "",
-    lift: "",
-    packing: "",
-    stairsFrom: "",
-    stairsTo: "",
-    survey: "",
-    details: "",
-    name: "",
-    phone: "",
-    email: "",
-    dismantling: "",
-    propertyTypeTo: "",
-    roomsTo: "",
-    houseFloorsTo: "",
-    floorTo: "",
-    liftTo: "",
-    media: [] as File[],
+  const [step, setStep] = useState<number>(() => {
+  if (typeof window !== "undefined") {
+    const savedStep = localStorage.getItem("moveFormStep");
+    return savedStep ? Number(savedStep) : 0;
+  }
+  return 0; // fallback pentru SSR
+});
+
+  const [formData, setFormData] = useState<any>(() => {
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem("moveFormData");
+      return savedData
+        ? JSON.parse(savedData)
+        : {
+            serviceType: "",
+            propertyType: "",
+            rooms: "",
+            houseFloors: "",
+            floor: "",
+            lift: "",
+            packing: "",
+            stairsFrom: "",
+            stairsTo: "",
+            survey: "",
+            details: "",
+            name: "",
+            phone: "",
+            email: "",
+            dismantling: "",
+            propertyTypeTo: "",
+            roomsTo: "",
+            houseFloorsTo: "",
+            floorTo: "",
+            liftTo: "",
+            media: [] as File[],
+          };
+    }
+    return {
+      serviceType: "",
+      propertyType: "",
+      rooms: "",
+      houseFloors: "",
+      floor: "",
+      lift: "",
+      packing: "",
+      stairsFrom: "",
+      stairsTo: "",
+      survey: "",
+      details: "",
+      name: "",
+      phone: "",
+      email: "",
+      dismantling: "",
+      propertyTypeTo: "",
+      roomsTo: "",
+      houseFloorsTo: "",
+      floorTo: "",
+      liftTo: "",
+      media: [] as File[],
+    };
   });
 
   // Restore saved state after hydration
