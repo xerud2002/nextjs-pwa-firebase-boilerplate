@@ -6,3 +6,12 @@
 body {
   @apply bg-gray-50 text-gray-800;
 }
+
+.custom-calendar {
+  transform: scale(1.40);   /* mărește cu 20% */
+  transform-origin: center;
+  margin: 70px;
+  position: relative !important;
+  z-index: 40 !important;
+ 
+}
