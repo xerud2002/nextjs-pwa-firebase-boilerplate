@@ -6,7 +6,10 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { getAuth, signInAnonymously } from "firebase/auth";
-import emailjs from "@emailjs/browser"; // sau nodemailer pe backend
+import emailjs from "@emailjs/browser";
+import DatePicker from "react-multi-date-picker";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const steps = [
   "Tip serviciu",
@@ -616,20 +619,26 @@ export default function MoveForm() {
               </div>
             </div>
           )}
-          {step === 6 && (
-            <div>
-              <h2 className="text-xl font-bold mb-4">
-                Alte detalii pentru ofertă
-              </h2>
-              <textarea
-                className="w-full border rounded-lg p-3"
-                rows={4}
-                placeholder="Ex: canapea mare, parcare dificilă, acces strâmt..."
-                value={formData.details}
-                onChange={(e) => handleChange("details", e.target.value)}
-              />
-            </div>
-          )}
+{step === 6 && (
+  <div>
+    <h2 className="text-xl font-bold mb-4">
+      Când dorești să aibă loc mutarea?
+    </h2>
+
+    <DatePicker
+      selected={formData.moveDate ? new Date(formData.moveDate) : null}
+      onChange={(date) =>
+        handleChange("moveDate", date ? date.toISOString().split("T")[0] : "")
+      }
+      inline
+    />
+  </div>
+)}
+
+
+
+
+
           {step === 7 && (
             <div>
               <h2 className="text-xl font-bold mb-4">Datele tale de contact</h2>
