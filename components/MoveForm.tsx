@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
-import SurveyStep from "./SurveyStep";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -18,106 +17,69 @@ const steps = [
 ];
 
 export default function MoveForm() {
-  // Start with safe defaults
-  const [step, setStep] = useState<number>(() => {
-  if (typeof window !== "undefined") {
-    const savedStep = localStorage.getItem("moveFormStep");
-    return savedStep ? Number(savedStep) : 0;
-  }
-  return 0; // fallback pentru SSR
-});
-  
   const [hydrated, setHydrated] = useState(false);
 
-    useEffect(() => {
-      setHydrated(true);
-    }, []);
+  // default values
+  const defaultFormData = {
+    serviceType: "",
+    propertyType: "",
+    rooms: "",
+    houseFloors: "",
+    floor: "",
+    lift: "",
+    packing: "",
+    stairsFrom: "",
+    stairsTo: "",
+    survey: "",
+    details: "",
+    name: "",
+    phone: "",
+    email: "",
+    dismantling: "",
+    propertyTypeTo: "",
+    roomsTo: "",
+    houseFloorsTo: "",
+    floorTo: "",
+    liftTo: "",
+    media: [] as File[],
+  };
+
+  const [step, setStep] = useState<number>(0);
+  const [formData, setFormData] = useState<any>(defaultFormData);
+
+  // ✅ Load saved data after client hydration
+  useEffect(() => {
+    const savedStep = localStorage.getItem("moveFormStep");
+    const savedData = localStorage.getItem("moveFormData");
+
+    if (savedStep) setStep(Number(savedStep));
+    if (savedData) {
+      try {
+        setFormData(JSON.parse(savedData));
+      } catch (err) {
+        console.error("Failed to parse saved form data", err);
+      }
+    }
+
+    setHydrated(true);
+  }, []);
+
+  // ✅ Save progress to localStorage
+  useEffect(() => {
+    if (hydrated) {
+      localStorage.setItem("moveFormStep", step.toString());
+    }
+  }, [step, hydrated]);
+
+  useEffect(() => {
+    if (hydrated) {
+      localStorage.setItem("moveFormData", JSON.stringify(formData));
+    }
+  }, [formData, hydrated]);
 
   if (!hydrated) {
-    // Sau un spinner, skeleton, etc.
     return <div className="text-center py-10">Se încarcă...</div>;
   }
-
-
-  const [formData, setFormData] = useState<any>(() => {
-    if (typeof window !== "undefined") {
-      const savedData = localStorage.getItem("moveFormData");
-      return savedData
-        ? JSON.parse(savedData)
-        : {
-            serviceType: "",
-            propertyType: "",
-            rooms: "",
-            houseFloors: "",
-            floor: "",
-            lift: "",
-            packing: "",
-            stairsFrom: "",
-            stairsTo: "",
-            survey: "",
-            details: "",
-            name: "",
-            phone: "",
-            email: "",
-            dismantling: "",
-            propertyTypeTo: "",
-            roomsTo: "",
-            houseFloorsTo: "",
-            floorTo: "",
-            liftTo: "",
-            media: [] as File[],
-          };
-    }
-    return {
-      serviceType: "",
-      propertyType: "",
-      rooms: "",
-      houseFloors: "",
-      floor: "",
-      lift: "",
-      packing: "",
-      stairsFrom: "",
-      stairsTo: "",
-      survey: "",
-      details: "",
-      name: "",
-      phone: "",
-      email: "",
-      dismantling: "",
-      propertyTypeTo: "",
-      roomsTo: "",
-      houseFloorsTo: "",
-      floorTo: "",
-      liftTo: "",
-      media: [] as File[],
-    };
-  });
-
-  // Restore saved state after hydration
-  // useEffect(() => {
-  //   const savedData = localStorage.getItem("moveFormData");
-  //   const savedStep = localStorage.getItem("moveFormStep");
-
-  //   if (savedData) {
-  //     try {
-  //       setFormData(JSON.parse(savedData));
-  //     } catch (err) {
-  //       console.error("Failed to parse saved form data", err);
-  //     }
-  //   }
-  //   if (savedStep) {
-  //     setStep(Number(savedStep));
-  //   }
-  // }, []);
-
-  // Persist to localStorage on every change
-  useEffect(() => {
-    localStorage.setItem("moveFormData", JSON.stringify(formData));
-  }, [formData]);
-
-  useEffect(() => {
-    localStorage.setItem("moveFormStep", step.toString());
-  }, [step]);
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
@@ -135,29 +97,7 @@ export default function MoveForm() {
       alert("✅ Cererea a fost salvată cu succes!");
 
       // Reset
-      setFormData({
-        serviceType: "",
-        propertyType: "",
-        rooms: "",
-        houseFloors: "",
-        floor: "",
-        lift: "",
-        packing: "",
-        stairsFrom: "",
-        stairsTo: "",
-        survey: "",
-        details: "",
-        name: "",
-        phone: "",
-        email: "",
-        dismantling: "",
-        propertyTypeTo: "",
-        roomsTo: "",
-        houseFloorsTo: "",
-        floorTo: "",
-        liftTo: "",
-        media: [] as File[],
-      });
+      setFormData(defaultFormData);
       setStep(0);
       localStorage.removeItem("moveFormData");
       localStorage.removeItem("moveFormStep");
