@@ -184,70 +184,79 @@ export default function MoveForm() {
     }
   };
   const isStepValid = () => {
-    switch (step) {
-      case 0:
-        return formData.serviceType !== "";
-      case 1:
-        if (formData.propertyType === "Casă") {
-          return (
-            formData.propertyType !== "" &&
-            formData.rooms !== "" &&
-            formData.houseFloors !== ""
-          );
-        }
-        if (
-          formData.propertyType === "Apartament" ||
-          formData.propertyType === "Office"
-        ) {
-          return (
-            formData.propertyType !== "" &&
-            formData.rooms !== "" &&
-            formData.floor !== "" &&
-            (formData.floor === "Parter" || formData.lift !== "")
-          );
-        }
-        if (formData.propertyType === "Storage") {
-          return formData.propertyType !== "" && formData.rooms !== "";
-        }
-        return false;
-      case 2:
-        return formData.packing !== "";
-      case 3:
-        return formData.dismantling !== "";
-      case 4:
-        if (formData.propertyTypeTo === "Casă") {
-          return (
-            formData.propertyTypeTo !== "" &&
-            formData.roomsTo !== "" &&
-            formData.houseFloorsTo !== ""
-          );
-        }
-        if (
-          formData.propertyTypeTo === "Apartament" ||
-          formData.propertyTypeTo === "Office"
-        ) {
-          return (
-            formData.propertyTypeTo !== "" &&
-            formData.roomsTo !== "" &&
-            formData.floorTo !== "" &&
-            (formData.floorTo === "Parter" || formData.liftTo !== "")
-          );
-        }
-        return formData.propertyTypeTo !== "" && formData.roomsTo !== "";
-      case 5:
-        return formData.survey !== "";
-      case 6:
-        return true;
-      case 7:
+  switch (step) {
+    case 0: // Tip serviciu
+      return formData.serviceType !== "";
+    case 1: // Dimensiunea mutării
+      if (formData.propertyType === "Casă") {
         return (
-          formData.name !== "" &&
-          formData.phone !== "" &&
-          formData.email !== ""
+          formData.propertyType !== "" &&
+          formData.rooms !== "" &&
+          formData.houseFloors !== ""
         );
-      default:
-        return false;
-    }
-  };
+      }
+      if (formData.propertyType === "Apartament" || formData.propertyType === "Office") {
+        return (
+          formData.propertyType !== "" &&
+          formData.rooms !== "" &&
+          formData.floor !== "" &&
+          (formData.floor === "Parter" || formData.lift !== "")
+        );
+      }
+      if (formData.propertyType === "Storage") {
+        return formData.propertyType !== "" && formData.rooms !== "";
+      }
+      return false;
+    case 2: // Adresa completă de colectare
+      return (
+        formData.pickupCounty !== "" &&
+        formData.pickupCity !== "" &&
+        formData.pickupStreet !== "" &&
+        formData.pickupPostal !== ""
+      );
+    case 3: // Detalii destinație
+      if (formData.propertyTypeTo === "Casă") {
+        return (
+          formData.propertyTypeTo !== "" &&
+          formData.roomsTo !== "" &&
+          formData.houseFloorsTo !== ""
+        );
+      }
+      if (formData.propertyTypeTo === "Apartament" || formData.propertyTypeTo === "Office") {
+        return (
+          formData.propertyTypeTo !== "" &&
+          formData.roomsTo !== "" &&
+          formData.floorTo !== "" &&
+          (formData.floorTo === "Parter" || formData.liftTo !== "")
+        );
+      }
+      return formData.propertyTypeTo !== "" && formData.roomsTo !== "";
+    case 4: // Adresa completă de livrare
+      return (
+        formData.deliveryCounty !== "" &&
+        formData.deliveryCity !== "" &&
+        formData.deliveryStreet !== "" &&
+        formData.deliveryPostal !== ""
+      );
+    case 5: // Data mutării
+      return formData.moveDate !== "" || formData.moveOption !== "";
+    case 6: // Împachetare
+      return formData.packing !== "";
+    case 7: // Demontare
+      return formData.dismantling !== "";
+    case 8: // Survey estimare
+      return formData.survey !== "";
+    case 9: // Date contact
+      return (
+        formData.name !== "" &&
+        formData.phone !== "" &&
+        formData.email !== ""
+      );
+    default:
+      return false;
+  }
+};
+
 
   return (
     <div className="flex flex-col min-h-screen">
