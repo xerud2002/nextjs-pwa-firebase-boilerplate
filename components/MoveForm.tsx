@@ -59,6 +59,20 @@ export default function MoveForm() {
     media: [] as File[],
     moveDate: "",
     moveOption: "",
+    pickupCounty: "",
+    pickupCity: "",
+    pickupStreet: "",
+    pickupNumber: "",
+    pickupDetails: "",
+    pickupPostal: "",
+    pickupInstructions: "",
+    deliveryCounty: "",
+    deliveryCity: "",
+    deliveryStreet: "",
+    deliveryNumber: "",
+    deliveryDetails: "",
+    deliveryPostal: "",
+    deliveryInstructions: "",
   };
 
   const [step, setStep] = useState<number>(0);
