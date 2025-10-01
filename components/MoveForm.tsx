@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../utils/firebase";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, Timestamp, setDoc, doc } from "firebase/firestore";
 import { getAuth, } from "firebase/auth";
 import emailjs from "@emailjs/browser";
 import { Calendar, DateObject } from "react-multi-date-picker";
@@ -149,10 +149,21 @@ export default function MoveForm() {
       const docRef = await addDoc(collection(db, "requests"), {
         ...formData,
         media: mediaUrls,
-        userId: auth.currentUser?.uid || null, // 🔹 salvăm UID
+        userId: auth.currentUser?.uid || null, 
         createdAt: Timestamp.now(),
         status: "Nouă",
       })
+
+      // 🔹 după ce s-a creat cererea, salvăm/actualizăm profilul clientului
+      if (auth.currentUser) {
+        await setDoc(doc(db, "users", auth.currentUser.uid), {
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email
+        }, { merge: true })
+      }
+
+
 
       // dacă a ales "media_later", trimitem email cu link de upload
       if (formData.survey === "media_later") {

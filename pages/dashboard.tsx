@@ -2,20 +2,31 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/router"
 import { auth, db, onAuthChange, logout } from "../utils/firebase"
-import { collection, query, where, getDocs } from "firebase/firestore"
+import { collection, query, where, getDocs, setDoc, doc, getDoc } from "firebase/firestore"
 import { User } from "firebase/auth"
 
 export default function Dashboard() {
-  const router = useRouter()
-  const [user, setUser] = useState<User | null>(null)
-  const [tab, setTab] = useState("orders")
-  const [orders, setOrders] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const statusColors: Record<string, string> = { 
-    "Nouă": "bg-blue-100 text-blue-800",
-    "În lucru": "bg-yellow-100 text-yellow-800",
-    "Finalizată": "bg-green-100 text-green-800",
+    const router = useRouter()
+    const [user, setUser] = useState<User | null>(null)
+    const [tab, setTab] = useState("orders")
+    const [orders, setOrders] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+    const statusColors: Record<string, string> = { 
+        "Nouă": "bg-blue-100 text-blue-800",
+        "În lucru": "bg-yellow-100 text-yellow-800",
+        "Finalizată": "bg-green-100 text-green-800",
     };
+    const [profile, setProfile] = useState<any>(null)
+
+    useEffect(() => {
+    if (!user) return
+    const fetchProfile = async () => {
+        const snap = await getDoc(doc(db, "users", user.uid))
+        if (snap.exists()) setProfile(snap.data())
+    }
+    fetchProfile()
+    }, [user])
+
 
   useEffect(() => {
     const unsub = onAuthChange((u) => {
@@ -26,19 +37,32 @@ export default function Dashboard() {
       }
     })
     return () => unsub()
-  }, [router])
+    }, [router])
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      if (!user) return
-      setLoading(true)
-      const q = query(collection(db, "requests"), where("userId", "==", user.uid))
-      const snap = await getDocs(q)
-      setOrders(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })))
-      setLoading(false)
-    }
-    fetchOrders()
-  }, [user])
+  const fetchOrders = async () => {
+    if (!user) return
+    setLoading(true)
+    const q = query(collection(db, "requests"), where("userId", "==", user.uid))
+    const snap = await getDocs(q)
+    const ordersData = snap.docs.map(doc => {
+      const data = doc.data()
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : null
+      }
+    })
+
+    ordersData.sort((a, b) => (b.createdAt?.getTime?.() || 0) - (a.createdAt?.getTime?.() || 0))
+
+    setOrders(ordersData)
+    setLoading(false)
+  }
+  fetchOrders()
+}, [user])
+
+
 
   if (!user) return null
 
@@ -108,9 +132,9 @@ export default function Dashboard() {
       {tab === "profile" && (
         <div>
           <h2 className="text-xl font-bold mb-4">Detalii profil</h2>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Nume:</strong> {user.displayName || "-"}</p>
-          <p className="text-sm text-gray-500 mt-4">🔧 Aici putem adăuga opțiuni de editare profil (nume, telefon, notificări, etc.)</p>
+            <p><strong>Email:</strong> {profile?.email || user.email}</p>
+            <p><strong>Nume:</strong> {profile?.name || user.displayName || "-"}</p>
+            <p><strong>Telefon:</strong> {profile?.phone || "-"}</p>
         </div>
       )}
 
