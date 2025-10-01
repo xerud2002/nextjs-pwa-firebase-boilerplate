@@ -4,11 +4,24 @@ import Head from "next/head"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import MoveForm from "../components/MoveForm";
+import { loginWithGoogle, loginWithFacebook, loginWithEmail, registerWithEmail, logout, onAuthChange } from "../utils/firebase"
+import { useEffect, useState } from "react"
+import { User } from "firebase/auth"
 
 
 
 export default function HomePage() {
-  return (
+
+  const [user, setUser] = useState<User | null>(null)
+    useEffect(() => {
+      const unsub = onAuthChange(setUser)
+      return () => unsub()
+  }, [])
+
+
+
+
+    return (
     <>
       <Head>
         <title>ofertemutare.ro</title>
@@ -65,30 +78,49 @@ export default function HomePage() {
       {/* CLIENT ACCOUNT BOX */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto rounded-2xl bg-white p-10 flex flex-col md:flex-row items-center justify-between gap-10 shadow">
-          {/* LEFT SIDE */}
           <div className="flex-1 max-w-md">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Cont Client</h2>
-            <p className="text-gray-600 mb-6">
-              Autentifică-te pentru a trimite cereri rapid și a urmări ofertele primite de la firmele de mutări.
-            </p>
-            <div className="flex items-center gap-4">
-              <button className="bg-green-500 text-white px-6 py-3 rounded-full font-medium hover:bg-green-600 transition">
-                Login sau înregistrare
-              </button>
-              <div className="flex gap-3">
-                <Image src="/icons/google.svg" alt="Google" width={32} height={32} className="cursor-pointer" />
-                <Image src="/icons/facebook.svg" alt="Facebook" width={32} height={32} className="cursor-pointer" />
-                <Image src="/icons/apple.svg" alt="Apple" width={32} height={32} className="cursor-pointer" />
-              </div>
-            </div>
+
+            {!user ? (
+              <>
+                <p className="text-gray-600 mb-6">
+                  Autentifică-te pentru a trimite cereri rapid și a urmări ofertele primite.
+                </p>
+
+                {/* Email + Parolă */}
+                <Link 
+                  href="/auth" 
+                  className="bg-green-500 text-white px-6 py-3 rounded-full font-medium hover:bg-green-600 transition"
+                >
+                  Login cu Email / Parolă
+                </Link>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-700 mb-4">Salut, {user.displayName || user.email}</p>
+                <button
+                  onClick={logout}
+                  className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                >
+                  Logout
+                </button>
+                <div className="mt-4">
+                  <Link href="/dashboard" className="text-green-600 hover:underline">
+                    ➡ Vezi cererile tale
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
-          {/* RIGHT SIDE */}
+
+          {/* Imagine dreapta */}
           <div className="flex-1 flex gap-4 justify-center">
             <Image src="/pics/oferta.png" alt="Ofertă" width={180} height={200} className="rounded-xl shadow-lg object-cover hidden md:block" />
             <Image src="/pics/mutare.png" alt="Mutare" width={180} height={200} className="rounded-xl shadow-lg object-cover hidden md:block" />
           </div>
         </div>
       </section>
+
 
       {/* SERVICES GRID */}
       <section className="py-16 bg-gray-100">
@@ -208,5 +240,5 @@ export default function HomePage() {
       {/* FOOTER */}
       <Footer />
     </>
-  )
+    )
 }

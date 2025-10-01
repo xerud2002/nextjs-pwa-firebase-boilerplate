@@ -3,12 +3,13 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useState, useEffect } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../utils/firebase";
+import { auth, db, storage } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { getAuth, signInAnonymously } from "firebase/auth";
 import emailjs from "@emailjs/browser";
 import { Calendar, DateObject } from "react-multi-date-picker";
 // import "react-datepicker/dist/react-datepicker.css";
+
 
 const steps = [
   "Tip serviciu",                 // 0
@@ -112,25 +113,25 @@ export default function MoveForm() {
     return <div className="text-center py-10">Se încarcă...</div>;
   }
   const toIsoDate = (d: any) => {
-  if (!d) return "";
-  if (typeof d === "string") {
-    // deja string → îl returnăm direct
-    return d;
-  }
-  if (typeof d.format === "function") {
-    // obiect din react-multi-date-picker
-    return d.format("YYYY-MM-DD");
-  }
-  if (d instanceof Date) {
-    // nativ Date
-    return d.toISOString().slice(0, 10);
-  }
-  try {
-    // fallback – forțăm conversia
-    return new Date(d).toISOString().slice(0, 10);
-  } catch {
-    return "";
-  }
+    if (!d) return "";
+    if (typeof d === "string") {
+      // deja string → îl returnăm direct
+      return d;
+    }
+    if (typeof d.format === "function") {
+      // obiect din react-multi-date-picker
+      return d.format("YYYY-MM-DD");
+    }
+    if (d instanceof Date) {
+      // nativ Date
+      return d.toISOString().slice(0, 10);
+    }
+    try {
+      // fallback – forțăm conversia
+      return new Date(d).toISOString().slice(0, 10);
+    } catch {
+      return "";
+    }
   }
   const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
@@ -155,11 +156,13 @@ export default function MoveForm() {
       // adăugăm cererea în Firestore
       const docRef = await addDoc(collection(db, "requests"), {
         ...formData,
-        media: mediaUrls, // înlocuim File[] cu URL[]
+        media: mediaUrls,
+        userId: auth.currentUser?.uid || null, // 🔹 salvăm UID
         createdAt: Timestamp.now(),
-      });
+        status: "Nouă",
+      })
 
-      // dacă a ales "media_later", trimitem email cu linkul de upload
+      // dacă a ales "media_later", trimitem email cu link de upload
       if (formData.survey === "media_later") {
         const uploadLink = `${window.location.origin}/upload/${docRef.id}`;
 
@@ -185,6 +188,9 @@ export default function MoveForm() {
       alert("❌ A apărut o eroare la salvarea cererii.");
     }
   };
+
+
+
   const isStepValid = () => {
   switch (step) {
     case 0: // Tip serviciu
@@ -258,7 +264,6 @@ export default function MoveForm() {
       return false;
   }
 };
-
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -868,7 +873,6 @@ export default function MoveForm() {
               />
             </div>
           )}
-
 
           {/* Navigation */}
           <div className="mt-6 flex justify-between">
