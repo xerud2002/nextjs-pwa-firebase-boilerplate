@@ -145,6 +145,8 @@ export default function MoveForm() {
         );
       }
 
+      
+
       // adăugăm cererea în Firestore
       const docRef = await addDoc(collection(db, "requests"), {
         ...formData,
