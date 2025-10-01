@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/router"
 import { auth, db, onAuthChange, logout } from "../utils/firebase"
-import { collection, query, where, getDocs, setDoc, doc, getDoc } from "firebase/firestore"
+import { collection, query, where, getDocs, setDoc, doc, getDoc, deleteDoc } from "firebase/firestore"
 import { User } from "firebase/auth"
 
 export default function Dashboard() {
@@ -112,20 +112,45 @@ export default function Dashboard() {
           ) : (
             <ul className="space-y-4">
               {orders.map(order => (
-                <li key={order.id} className="p-4 border rounded-lg shadow bg-white">
-                  <p><strong>Serviciu:</strong> {order.serviceType}</p>
-                  <p><strong>Colectare:</strong> {order.pickupCity}, {order.pickupCounty}</p>
-                  <p><strong>Livrare:</strong> {order.deliveryCity}, {order.deliveryCounty}</p>
-                  <p><strong>Data:</strong> {order.moveDate || order.moveOption}</p>
-                  <p className="flex items-center gap-2">
-                    <strong>Status:</strong>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status || "Nouă"]}`}>
+                <li key={order.id} className="p-4 border rounded-lg shadow bg-white flex justify-between items-center">
+                  {/* Info comandă */}
+                  <div>
+                    <p><strong>Serviciu:</strong> {order.serviceType}</p>
+                    <p><strong>Colectare:</strong> {order.pickupCity}, {order.pickupCounty}</p>
+                    <p><strong>Livrare:</strong> {order.deliveryCity}, {order.deliveryCounty}</p>
+                    <p><strong>Data:</strong> {order.moveDate || order.moveOption}</p>
+                    <p className="flex items-center gap-2">
+                      <strong>Status:</strong>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status || "Nouă"]}`}>
                         {order.status || "Nouă"}
-                    </span>
-                  </p>
+                      </span>
+                    </p>
+                  </div>
+
+                  {/* Butoane acțiuni */}
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={() => router.push(`/form?id=${order.id}`)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Editează
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (confirm("Ești sigur că vrei să ștergi această comandă?")) {
+                          await deleteDoc(doc(db, "requests", order.id))
+                          setOrders(orders.filter(o => o.id !== order.id))
+                        }
+                      }}
+                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Șterge
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
+
           )}
         </div>
       )}
