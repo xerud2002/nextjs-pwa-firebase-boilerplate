@@ -1,46 +1,115 @@
 "use client"
-import { useEffect, useState } from "react"
-import { db, onAuthChange } from "../utils/firebase"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/router"
+import { auth, db, onAuthChange, logout } from "../utils/firebase"
 import { collection, query, where, getDocs } from "firebase/firestore"
 import { User } from "firebase/auth"
 
 export default function Dashboard() {
+  const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
-  const [requests, setRequests] = useState<any[]>([])
+  const [tab, setTab] = useState("orders")
+  const [orders, setOrders] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsub = onAuthChange(setUser)
+    const unsub = onAuthChange((u) => {
+      if (!u) {
+        router.push("/auth") // dacă nu e logat, trimitem spre login
+      } else {
+        setUser(u)
+      }
+    })
     return () => unsub()
-  }, [])
+  }, [router])
 
   useEffect(() => {
-    const fetchRequests = async () => {
+    const fetchOrders = async () => {
       if (!user) return
+      setLoading(true)
       const q = query(collection(db, "requests"), where("userId", "==", user.uid))
       const snap = await getDocs(q)
-      setRequests(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+      setOrders(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+      setLoading(false)
     }
-    fetchRequests()
+    fetchOrders()
   }, [user])
 
-  if (!user) return <p className="p-10">Te rugăm să te autentifici pentru a vedea cererile.</p>
+  if (!user) return null
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Cererile tale</h1>
-      {requests.length === 0 ? (
-        <p>Nu ai nicio cerere trimisă încă.</p>
-      ) : (
-        <ul className="space-y-4">
-          {requests.map(req => (
-            <li key={req.id} className="p-4 border rounded-lg shadow">
-              <p><strong>Serviciu:</strong> {req.serviceType}</p>
-              <p><strong>Mutare:</strong> {req.pickupCity} → {req.deliveryCity}</p>
-              <p><strong>Data:</strong> {req.moveDate || req.moveOption}</p>
-              <p><strong>Status:</strong> {req.status || "Nouă"}</p>
-            </li>
-          ))}
-        </ul>
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Bun venit, {user.displayName || user.email}</h1>
+        <button
+          onClick={logout}
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-6 border-b mb-6">
+        <button 
+          onClick={() => setTab("orders")} 
+          className={tab==="orders" ? "border-b-2 border-green-600 pb-2 font-semibold" : "pb-2"}
+        >
+          Comenzile mele
+        </button>
+        <button 
+          onClick={() => setTab("profile")} 
+          className={tab==="profile" ? "border-b-2 border-green-600 pb-2 font-semibold" : "pb-2"}
+        >
+          Profil
+        </button>
+        <button 
+          onClick={() => setTab("messages")} 
+          className={tab==="messages" ? "border-b-2 border-green-600 pb-2 font-semibold" : "pb-2"}
+        >
+          Mesaje
+        </button>
+      </div>
+
+      {/* Content */}
+      {tab === "orders" && (
+        <div>
+          <h2 className="text-xl font-bold mb-4">Comenzile tale</h2>
+          {loading ? (
+            <p>Se încarcă comenzile...</p>
+          ) : orders.length === 0 ? (
+            <p>Nu ai trimis nicio cerere încă.</p>
+          ) : (
+            <ul className="space-y-4">
+              {orders.map(order => (
+                <li key={order.id} className="p-4 border rounded-lg shadow bg-white">
+                  <p><strong>Serviciu:</strong> {order.serviceType}</p>
+                  <p><strong>Colectare:</strong> {order.pickupCity}, {order.pickupCounty}</p>
+                  <p><strong>Livrare:</strong> {order.deliveryCity}, {order.deliveryCounty}</p>
+                  <p><strong>Data:</strong> {order.moveDate || order.moveOption}</p>
+                  <p><strong>Status:</strong> {order.status || "Nouă"}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      {tab === "profile" && (
+        <div>
+          <h2 className="text-xl font-bold mb-4">Detalii profil</h2>
+          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>Nume:</strong> {user.displayName || "-"}</p>
+          <p className="text-sm text-gray-500 mt-4">🔧 Aici putem adăuga opțiuni de editare profil (nume, telefon, notificări, etc.)</p>
+        </div>
+      )}
+
+      {tab === "messages" && (
+        <div>
+          <h2 className="text-xl font-bold mb-4">Mesaje de la companii</h2>
+          <p className="text-gray-600">📩 Aici vor apărea mesajele companiilor de mutări care răspund la cererile tale.</p>
+          <p className="text-sm text-gray-500 mt-2">Sugestie: poți face un mini-chat pe fiecare comandă sau un inbox simplu.</p>
+        </div>
       )}
     </div>
   )

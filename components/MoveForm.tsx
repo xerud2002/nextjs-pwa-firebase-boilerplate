@@ -2,6 +2,7 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
@@ -10,6 +11,8 @@ import emailjs from "@emailjs/browser";
 import { Calendar, DateObject } from "react-multi-date-picker";
 // import "react-datepicker/dist/react-datepicker.css";
 
+
+  
 
 const steps = [
   "Tip serviciu",                 // 0
@@ -26,6 +29,7 @@ const steps = [
 
 
 export default function MoveForm() {
+  const router = useRouter()   // 🔹 instanțiem router-ul
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -183,6 +187,7 @@ export default function MoveForm() {
       setStep(0);
       localStorage.removeItem("moveFormData");
       localStorage.removeItem("moveFormStep");
+      router.push("/dashboard");
     } catch (error) {
       console.error("Eroare la salvare:", error);
       alert("❌ A apărut o eroare la salvarea cererii.");

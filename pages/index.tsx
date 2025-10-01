@@ -97,17 +97,20 @@ export default function HomePage() {
               </>
             ) : (
               <>
-                <p className="text-gray-700 mb-4">Salut, {user.displayName || user.email}</p>
-                <button
-                  onClick={logout}
-                  className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                >
-                  Logout
-                </button>
-                <div className="mt-4">
-                  <Link href="/dashboard" className="text-green-600 hover:underline">
-                    ➡ Vezi cererile tale
+                <p className="text-gray-700 mb-4">Gestionezati Cererile, {user.displayName || user.email}</p>
+                <div className="flex gap-4">
+                  <Link 
+                    href="/dashboard" 
+                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  >
+                    Panou Client
                   </Link>
+                  <button
+                    onClick={logout}
+                    className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                  >
+                    Logout
+                  </button>
                 </div>
               </>
             )}
