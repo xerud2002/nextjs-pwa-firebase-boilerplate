@@ -22,6 +22,7 @@ export default function HomePage() {
     if (user) {
       router.push("/form")      // 🔹 dacă e logat → formular
     } else {
+      localStorage.setItem("redirectAfterLogin", "form") // 🔹 salvăm intenția
       router.push("/auth")      // 🔹 dacă nu e logat → pagina de login
     }
   }

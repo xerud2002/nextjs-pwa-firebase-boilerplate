@@ -11,9 +11,6 @@ import emailjs from "@emailjs/browser";
 import { Calendar, DateObject } from "react-multi-date-picker";
 // import "react-datepicker/dist/react-datepicker.css";
 
-
-  
-
 const steps = [
   "Tip serviciu",                 // 0
   "Dimensiunea mutării",          // 1
@@ -26,7 +23,6 @@ const steps = [
   "Survey estimare",              // 8
   "Date de contact"               // 9
 ];
-
 
 export default function MoveForm() {
   const router = useRouter()   // 🔹 instanțiem router-ul
@@ -187,7 +183,7 @@ export default function MoveForm() {
       setStep(0);
       localStorage.removeItem("moveFormData");
       localStorage.removeItem("moveFormStep");
-      router.push("/dashboard");
+      router.push("/dashboard") // 🔹 redirect spre dashboard
     } catch (error) {
       console.error("Eroare la salvare:", error);
       alert("❌ A apărut o eroare la salvarea cererii.");

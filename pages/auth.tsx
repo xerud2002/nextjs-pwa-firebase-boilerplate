@@ -14,16 +14,22 @@ export default function AuthPage() {
   const [isRegister, setIsRegister] = useState(false)
   const router = useRouter()
 
-  useEffect(() => {
-    const unsub = onAuthChange((u) => {
-      setUser(u)
-      if (u) {
-        // 🔹 dacă user-ul e deja logat → mergem direct pe dashboard
-        router.push("/dashboard")
-      }
-    })
-    return () => unsub()
-  }, [router])
+    useEffect(() => {
+        const unsub = onAuthChange((u) => {
+            setUser(u)
+            if (u) {
+            const redirect = localStorage.getItem("redirectAfterLogin")
+            if (redirect === "form") {
+                localStorage.removeItem("redirectAfterLogin")
+                router.push("/form")    // 🔹 merge la formular
+            } else {
+                router.push("/dashboard") // 🔹 altfel dashboard direct
+            }
+            }
+        })
+        return () => unsub()
+    }, [router])
+
 
   const handleEmailAuth = async () => {
     try {
