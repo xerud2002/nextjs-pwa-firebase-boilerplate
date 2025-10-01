@@ -4,22 +4,27 @@ import Head from "next/head"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import MoveForm from "../components/MoveForm";
-import { loginWithGoogle, loginWithFacebook, loginWithEmail, registerWithEmail, logout, onAuthChange } from "../utils/firebase"
+import { loginWithGoogle, loginWithFacebook, loginWithEmail, registerWithEmail, logout, onAuthChange, auth } from "../utils/firebase"
 import { useEffect, useState } from "react"
 import { User } from "firebase/auth"
-
+import { useRouter } from "next/router"
 
 
 export default function HomePage() {
-
+  const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
     useEffect(() => {
-      const unsub = onAuthChange(setUser)
-      return () => unsub()
+    const unsub = onAuthChange(setUser)
+    return () => unsub()
   }, [])
 
-
-
+  const handleGetOffers = () => {
+    if (user) {
+      router.push("/form")      // 🔹 dacă e logat → formular
+    } else {
+      router.push("/auth")      // 🔹 dacă nu e logat → pagina de login
+    }
+  }
 
     return (
     <>
@@ -43,9 +48,12 @@ export default function HomePage() {
             Compară oferte de la companii verificate și alege varianta ideală pentru mutarea ta.
           </p>
           <div className="flex justify-center gap-4">
-            <Link href="/form" className="px-6 py-3 bg-green-500 text-white rounded-full shadow hover:bg-green-600">
-               Obține oferte acum
-            </Link>
+            <button 
+              onClick={handleGetOffers}
+              className="px-6 py-3 bg-green-500 text-white rounded-full shadow hover:bg-green-600"
+            >
+              Obține oferte acum
+            </button>
           </div>
         </div>
       </section>
@@ -92,7 +100,7 @@ export default function HomePage() {
                   href="/auth" 
                   className="bg-green-500 text-white px-6 py-3 rounded-full font-medium hover:bg-green-600 transition"
                 >
-                  Login cu Email / Parolă
+                  Autentificare / Înregistrare
                 </Link>
               </>
             ) : (
