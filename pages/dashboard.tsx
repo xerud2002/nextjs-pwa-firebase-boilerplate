@@ -11,6 +11,11 @@ export default function Dashboard() {
   const [tab, setTab] = useState("orders")
   const [orders, setOrders] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const statusColors: Record<string, string> = { 
+    "Nouă": "bg-blue-100 text-blue-800",
+    "În lucru": "bg-yellow-100 text-yellow-800",
+    "Finalizată": "bg-green-100 text-green-800",
+    };
 
   useEffect(() => {
     const unsub = onAuthChange((u) => {
@@ -87,7 +92,12 @@ export default function Dashboard() {
                   <p><strong>Colectare:</strong> {order.pickupCity}, {order.pickupCounty}</p>
                   <p><strong>Livrare:</strong> {order.deliveryCity}, {order.deliveryCounty}</p>
                   <p><strong>Data:</strong> {order.moveDate || order.moveOption}</p>
-                  <p><strong>Status:</strong> {order.status || "Nouă"}</p>
+                  <p className="flex items-center gap-2">
+                    <strong>Status:</strong>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status || "Nouă"]}`}>
+                        {order.status || "Nouă"}
+                    </span>
+                  </p>
                 </li>
               ))}
             </ul>

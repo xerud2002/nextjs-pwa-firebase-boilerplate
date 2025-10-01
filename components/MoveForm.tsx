@@ -9,7 +9,12 @@ import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { getAuth, } from "firebase/auth";
 import emailjs from "@emailjs/browser";
 import { Calendar, DateObject } from "react-multi-date-picker";
-// import "react-datepicker/dist/react-datepicker.css";
+import toast from "react-hot-toast";
+import Select from "react-select";
+import counties from "../utils/counties";
+
+
+
 
 const steps = [
   "Tip serviciu",                 // 0
@@ -170,7 +175,7 @@ export default function MoveForm() {
         );
       }
 
-      alert("✅ Cererea a fost salvată cu succes!");
+      toast.success("✅ Cererea a fost salvată cu succes!");
       setFormData(defaultFormData);
       setStep(0);
       localStorage.removeItem("moveFormData");
@@ -178,7 +183,7 @@ export default function MoveForm() {
       router.push("/dashboard") // 🔹 redirect spre dashboard
     } catch (error) {
       console.error("Eroare la salvare:", error);
-      alert("❌ A apărut o eroare la salvarea cererii.");
+      toast.error("❌ A apărut o eroare la salvarea cererii.");
     }
   };
 
@@ -420,14 +425,13 @@ export default function MoveForm() {
             <div>
               <h2 className="text-xl font-bold mb-4">Adresa completă de colecție</h2>
               
-              <input
-                type="text"
-                placeholder="Județ"
-                className="w-full border rounded-lg p-3 mb-3"
-                value={formData.pickupCounty || ""}
-                onChange={(e) => handleChange("pickupCounty", e.target.value)}
+              <Select
+                className="mb-3"
+                options={counties.map(c => ({ value: c, label: c }))}
+                onChange={(opt) => handleChange("pickupCounty", opt?.value)}
+                value={formData.pickupCounty ? { value: formData.pickupCounty, label: formData.pickupCounty } : null}
               />
-              
+
               <input
                 type="text"
                 placeholder="Oraș / Localitate"
@@ -859,11 +863,12 @@ export default function MoveForm() {
               />
               <input
                 type="email"
-                placeholder="Email"
-                className="w-full border rounded-lg p-3"
+                className={`w-full border rounded-lg p-3 ${!formData.email && step===9 ? "border-red-500" : "border-gray-300"}`}
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
               />
+              {!formData.email && step===9 && <p className="text-red-500 text-sm mt-1">Emailul este obligatoriu</p>}
+
             </div>
           )}
 

@@ -1,0 +1,11 @@
+const counties: string[] = [
+  "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", 
+  "Botoșani", "Brașov", "Brăila", "București", "Buzău", "Caraș-Severin",
+  "Cluj", "Constanța", "Covasna", "Dâmbovița", "Dolj", "Galați", "Giurgiu",
+  "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov", "Maramureș",
+  "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj",
+  "Sibiu", "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea",
+  "Vrancea"
+];
+
+export default counties;
