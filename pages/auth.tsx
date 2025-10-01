@@ -33,18 +33,19 @@ export default function AuthPage() {
 
   const handleEmailAuth = async () => {
     try {
-      if (isRegister) {
+        if (isRegister) {
         await registerWithEmail(email, password)
         alert("✅ Cont creat cu succes!")
-      } else {
+        } else {
         await loginWithEmail(email, password)
         alert("✅ Autentificat cu succes!")
-      }
-      router.push("/dashboard")
+        }
+        // ❌ NU mai punem router.push("/dashboard") aici
+        // Redirectul se face în useEffect, unde verificăm redirectAfterLogin
     } catch (err: any) {
-      alert("❌ Eroare: " + err.message)
+        alert("❌ Eroare: " + err.message)
     }
-  }
+ }
 
   const handleResetPassword = async () => {
     if (!email) {
@@ -61,21 +62,21 @@ export default function AuthPage() {
 
   const handleGoogle = async () => {
     try {
-      await loginWithGoogle()
-      router.push("/dashboard")
+        await loginWithGoogle()
+        // ❌ scoatem router.push("/dashboard")
     } catch (err: any) {
-      alert("❌ Eroare: " + err.message)
+        alert("❌ Eroare: " + err.message)
     }
-  }
+ }
 
   const handleFacebook = async () => {
     try {
-      await loginWithFacebook()
-      router.push("/dashboard")
+        await loginWithFacebook()
+        // ❌ scoatem router.push("/dashboard")
     } catch (err: any) {
-      alert("❌ Eroare: " + err.message)
+        alert("❌ Eroare: " + err.message)
     }
-  }
+    }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-50">
