@@ -6,7 +6,7 @@ import { useRouter } from "next/router"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../utils/firebase";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { getAuth, signInAnonymously } from "firebase/auth";
+import { getAuth, } from "firebase/auth";
 import emailjs from "@emailjs/browser";
 import { Calendar, DateObject } from "react-multi-date-picker";
 // import "react-datepicker/dist/react-datepicker.css";
