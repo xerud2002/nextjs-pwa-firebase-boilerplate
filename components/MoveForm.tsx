@@ -32,8 +32,6 @@ const steps = [
 export default function MoveForm() {
   const router = useRouter()   // 🔹 instanțiem router-ul
   const [hydrated, setHydrated] = useState(false);
-
-
   // default values
   const defaultFormData = {
     serviceType: "",
@@ -74,10 +72,8 @@ export default function MoveForm() {
     deliveryInstructions: "",
      media: [] as File[],
   };
-
   const [step, setStep] = useState<number>(0);
   const [formData, setFormData] = useState<any>(defaultFormData);
-  
 
   // ✅ Load saved data after client hydration
   useEffect(() => {
@@ -92,7 +88,6 @@ export default function MoveForm() {
         console.error("Failed to parse saved form data", err);
       }
     }
-
     setHydrated(true);
   }, []);
   // ✅ Save progress to localStorage
@@ -596,13 +591,13 @@ export default function MoveForm() {
             <div>
               <h2 className="text-xl font-bold mb-4">Adresa completă de livrare</h2>
               
-              <input
-                type="text"
-                placeholder="Județ"
-                className="w-full border rounded-lg p-3 mb-3"
-                value={formData.deliveryCounty || ""}
-                onChange={(e) => handleChange("deliveryCounty", e.target.value)}
+              <Select
+                className="mb-3"
+                options={counties.map(c => ({ value: c, label: c }))}
+                onChange={(opt) => handleChange("deliveryCounty", opt?.value)}
+                value={formData.deliveryCounty ? { value: formData.deliveryCounty, label: formData.deliveryCounty } : null}
               />
+
               
               <input
                 type="text"
@@ -863,12 +858,13 @@ export default function MoveForm() {
               />
               <input
                 type="email"
-                className={`w-full border rounded-lg p-3 ${!formData.email && step===9 ? "border-red-500" : "border-gray-300"}`}
+                className="w-full border rounded-lg p-3 border-gray-300"
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
               />
-              {!formData.email && step===9 && <p className="text-red-500 text-sm mt-1">Emailul este obligatoriu</p>}
-
+              {!formData.email && step===9 && (
+                <p className="text-gray-600 text-sm mt-1">Emailul este obligatoriu</p>
+              )}
             </div>
           )}
 
