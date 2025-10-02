@@ -139,6 +139,7 @@ export default function MoveForm() {
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
+  
   const handleSubmit = async () => {
     try {
       let mediaUrls: string[] = [];
@@ -154,53 +155,62 @@ export default function MoveForm() {
         );
       }
 
-      // adăugăm cererea în Firestore
-      const docRef = await addDoc(collection(db, "requests"), {
-        ...formData,
-        media: mediaUrls,
-        userId: auth.currentUser?.uid || null, 
-        createdAt: Timestamp.now(),
-        status: "Nouă",
-      })
+      if (router.query.id) {
+        // 🔹 UPDATE EXISTENT
+        await updateDoc(doc(db, "requests", router.query.id as string), {
+          ...formData,
+          media: mediaUrls,
+          updatedAt: Timestamp.now(),
+        });
+        toast.success("✅ Cererea a fost actualizată!");
+      } else {
+        // 🔹 CREARE NOUĂ
+        const docRef = await addDoc(collection(db, "requests"), {
+          ...formData,
+          media: mediaUrls,
+          userId: auth.currentUser?.uid || null,
+          createdAt: Timestamp.now(),
+          status: "Nouă",
+        });
 
-      // 🔹 după ce s-a creat cererea, salvăm/actualizăm profilul clientului
-      if (auth.currentUser) {
-        await setDoc(doc(db, "users", auth.currentUser.uid), {
-          name: formData.name,
-          phone: formData.phone,
-          email: formData.email
-        }, { merge: true })
+        // salvăm/actualizăm profilul clientului
+        if (auth.currentUser) {
+          await setDoc(doc(db, "users", auth.currentUser.uid), {
+            name: formData.name,
+            phone: formData.phone,
+            email: formData.email,
+          }, { merge: true });
+        }
+
+        // dacă a ales "media_later", trimitem email cu link de upload
+        if (formData.survey === "media_later") {
+          const uploadLink = `${window.location.origin}/upload/${docRef.id}`;
+
+          await emailjs.send(
+            process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+            process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+            {
+              to_email: formData.email,
+              to_name: formData.name || "Client",
+              upload_link: uploadLink,
+            },
+            process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+          );
+        }
+
+        toast.success("✅ Cererea a fost salvată cu succes!");
       }
 
-      // dacă a ales "media_later", trimitem email cu link de upload
-      if (formData.survey === "media_later") {
-        const uploadLink = `${window.location.origin}/upload/${docRef.id}`;
-
-        await emailjs.send(
-          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-          {
-            to_email: formData.email,
-            to_name: formData.name || "Client",
-            upload_link: uploadLink,
-          },
-          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
-        );
-      }
-
-      toast.success("✅ Cererea a fost salvată cu succes!");
       setFormData(defaultFormData);
       setStep(0);
       localStorage.removeItem("moveFormData");
       localStorage.removeItem("moveFormStep");
-      router.push("/dashboard") // 🔹 redirect spre dashboard
+      router.push("/dashboard"); // redirect spre dashboard
     } catch (error) {
       console.error("Eroare la salvare:", error);
       toast.error("❌ A apărut o eroare la salvarea cererii.");
     }
   };
-
-
 
   const isStepValid = () => {
   switch (step) {
