@@ -1,4 +1,6 @@
 "use client"
+import Navbar from "../components/Navbar"
+import Footer from "../components/Footer"
 import { useState, useEffect } from "react"
 import { 
   loginWithEmail, registerWithEmail, loginWithGoogle, loginWithFacebook, 

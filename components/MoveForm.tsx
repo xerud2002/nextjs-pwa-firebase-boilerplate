@@ -5,16 +5,13 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "../utils/firebase";
-import { collection, addDoc, Timestamp, setDoc, doc } from "firebase/firestore";
+import { collection, addDoc, Timestamp, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getAuth, } from "firebase/auth";
 import emailjs from "@emailjs/browser";
 import { Calendar, DateObject } from "react-multi-date-picker";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import counties from "../utils/counties";
-
-
-
 
 const steps = [
   "Tip serviciu",                 // 0
@@ -74,6 +71,18 @@ export default function MoveForm() {
   };
   const [step, setStep] = useState<number>(0);
   const [formData, setFormData] = useState<any>(defaultFormData);
+
+  useEffect(() => {
+  const fetchRequest = async () => {
+    if (router.query.id) {
+      const snap = await getDoc(doc(db, "requests", router.query.id as string))
+      if (snap.exists()) {
+        setFormData(snap.data())
+      }
+    }
+  }
+  fetchRequest()
+}, [router.query])
 
   // ✅ Load saved data after client hydration
   useEffect(() => {
@@ -162,8 +171,6 @@ export default function MoveForm() {
           email: formData.email
         }, { merge: true })
       }
-
-
 
       // dacă a ales "media_later", trimitem email cu link de upload
       if (formData.survey === "media_later") {
