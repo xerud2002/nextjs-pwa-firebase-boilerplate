@@ -16,6 +16,7 @@ export default function StepProperty({ formData, handleChange }: StepProps) {
         className="w-full border rounded-lg p-3 mb-4"
         value={formData.propertyType || ""}
         onChange={(e) => handleChange("propertyType", e.target.value)}
+        aria-label="Tip proprietate"
       >
         <option value="">Selectează tipul</option>
         <option>Casă</option>
@@ -45,6 +46,7 @@ export default function StepProperty({ formData, handleChange }: StepProps) {
                 className="w-full border rounded-lg p-3 mb-4"
                 value={formData.rooms || ""}
                 onChange={(e) => handleChange("rooms", e.target.value)}
+                aria-label="Număr de camere"
               >
                 <option value="">Selectează</option>
                 <option>1 cameră</option>
@@ -65,6 +67,7 @@ export default function StepProperty({ formData, handleChange }: StepProps) {
             className="w-full border rounded-lg p-3"
             value={formData.houseFloors || ""}
             onChange={(e) => handleChange("houseFloors", e.target.value)}
+            aria-label="Câte etaje are casa?"
           >
             <option value="">Selectează</option>
             <option>Fără etaj</option>
@@ -82,6 +85,7 @@ export default function StepProperty({ formData, handleChange }: StepProps) {
             className="w-full border rounded-lg p-3 mb-4"
             value={formData.floor || ""}
             onChange={(e) => handleChange("floor", e.target.value)}
+            aria-label="La ce etaj este?"
           >
             <option value="">Selectează</option>
             <option>Parter</option>
@@ -99,6 +103,7 @@ export default function StepProperty({ formData, handleChange }: StepProps) {
                 className="w-full border rounded-lg p-3"
                 value={formData.lift || ""}
                 onChange={(e) => handleChange("lift", e.target.value)}
+                aria-label="Există lift?"
               >
                 <option value="">Selectează</option>
                 <option>Da</option>

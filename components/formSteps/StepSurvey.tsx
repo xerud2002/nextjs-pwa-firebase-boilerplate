@@ -66,6 +66,7 @@ export default function StepSurvey({ formData, handleChange, setFormData }: Step
               type="file"
               multiple
               accept="image/*,video/*"
+              title="Select files to upload"
               onChange={(e) =>
                 setFormData({
                   ...formData,

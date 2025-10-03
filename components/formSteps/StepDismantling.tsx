@@ -12,7 +12,11 @@ export default function StepDismantling({ formData, handleChange }: StepProps) {
       <h2 className="text-xl font-bold mb-4">
         Ai nevoie de ajutor la demontare și reasamblare mobilier?
       </h2>
+      <label htmlFor="dismantling-select" className="sr-only">
+        Select dismantling option
+      </label>
       <select
+        id="dismantling-select"
         className="w-full border rounded-lg p-3"
         value={formData.dismantling}
         onChange={(e) => handleChange("dismantling", e.target.value)}

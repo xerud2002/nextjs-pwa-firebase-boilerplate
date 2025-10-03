@@ -16,6 +16,7 @@ export default function StepDeliveryProperty({ formData, handleChange }: StepPro
         className="w-full border rounded-lg p-3 mb-3"
         value={formData.propertyTypeTo}
         onChange={(e) => handleChange("propertyTypeTo", e.target.value)}
+        aria-label="Tip proprietate"
       >
         <option value="">Selectează...</option>
         <option>Casă</option>
@@ -30,6 +31,7 @@ export default function StepDeliveryProperty({ formData, handleChange }: StepPro
           <select className="w-full border rounded-lg p-3 mb-3"
             value={formData.roomsTo}
             onChange={(e) => handleChange("roomsTo", e.target.value)}
+            aria-label="Număr camere"
           >
             <option value="">Selectează...</option>
             <option>1 cameră</option>
@@ -42,6 +44,7 @@ export default function StepDeliveryProperty({ formData, handleChange }: StepPro
           <select className="w-full border rounded-lg p-3"
             value={formData.houseFloorsTo || ""}
             onChange={(e) => handleChange("houseFloorsTo", e.target.value)}
+            aria-label="Câte etaje are casa?"
           >
             <option value="">Selectează...</option>
             <option>1 etaj</option>
@@ -58,6 +61,7 @@ export default function StepDeliveryProperty({ formData, handleChange }: StepPro
           <select className="w-full border rounded-lg p-3 mb-3"
             value={formData.roomsTo}
             onChange={(e) => handleChange("roomsTo", e.target.value)}
+            aria-label="Număr camere"
           >
             <option value="">Selectează...</option>
             <option>1 cameră</option>
@@ -70,6 +74,7 @@ export default function StepDeliveryProperty({ formData, handleChange }: StepPro
           <select className="w-full border rounded-lg p-3 mb-3"
             value={formData.floorTo}
             onChange={(e) => handleChange("floorTo", e.target.value)}
+            aria-label="La ce etaj este?"
           >
             <option value="">Selectează...</option>
             <option>Parter</option>
@@ -85,6 +90,7 @@ export default function StepDeliveryProperty({ formData, handleChange }: StepPro
               <select className="w-full border rounded-lg p-3"
                 value={formData.liftTo || ""}
                 onChange={(e) => handleChange("liftTo", e.target.value)}
+                aria-label="Există lift?"
               >
                 <option value="">Selectează</option>
                 <option>Da</option>
