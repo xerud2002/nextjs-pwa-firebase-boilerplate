@@ -25,7 +25,6 @@ const Navbar: React.FC = () => {
         <nav className="hidden md:flex space-x-4">
           <Link href="/about" className="px-3 py-2 rounded-md text-gray-700 hover:bg-green-500 hover:text-white transition">Despre Noi</Link>
           <Link href="/contact" className="px-3 py-2 rounded-md text-gray-700 hover:bg-green-500 hover:text-white transition">Contact</Link>
-          <Link href="/auth" className="px-3 py-2 rounded-md text-gray-700 hover:bg-green-500 hover:text-white transition">Autentificare Client</Link>
           <Link href="/firms" className="px-3 py-2 rounded-md text-gray-700 hover:bg-green-500 hover:text-white transition">Partener</Link>
         </nav>
 
@@ -50,7 +49,6 @@ const Navbar: React.FC = () => {
           <nav className="flex flex-col space-y-2 px-6 py-4">
             <Link href="/about" className="px-3 py-2 rounded-md text-gray-700 hover:bg-green-500 hover:text-white transition">Despre Noi</Link>
             <Link href="/contact" className="px-3 py-2 rounded-md text-gray-700 hover:bg-green-500 hover:text-white transition">Contact</Link>
-            <Link href="/auth" className="px-3 py-2 rounded-md text-gray-700 hover:bg-green-500 hover:text-white transition">Autentificare Client</Link>
             <Link href="/firms" className="px-3 py-2 rounded-md text-gray-700 hover:bg-green-500 hover:text-white transition">Partener</Link>
           </nav>
         </div>
