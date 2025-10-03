@@ -128,25 +128,29 @@ export default function Dashboard() {
                   </div>
 
                   {/* Butoane acțiuni */}
-                  <div className="flex flex-col gap-2">
-                    <button
-                      onClick={() => router.push(`/form?id=${order.id}`)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                      Editează
-                    </button>
-                    <button
-                      onClick={async () => {
-                        if (confirm("Ești sigur că vrei să ștergi această comandă?")) {
-                          await deleteDoc(doc(db, "requests", order.id))
-                          setOrders(orders.filter(o => o.id !== order.id))
-                        }
-                      }}
-                      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                      Șterge
-                    </button>
-                  </div>
+                  <div className="mt-3 flex gap-2">
+                  {/* Editare */}
+                  <button
+                    onClick={() => router.push(`/form?id=${order.id}`)}
+                    className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                  >
+                    Editează
+                  </button>
+
+                  {/* Ștergere */}
+                  <button
+                    onClick={async () => {
+                      if (confirm("Sigur vrei să ștergi această cerere?")) {
+                        await deleteDoc(doc(db, "requests", order.id))
+                        setOrders(prev => prev.filter(o => o.id !== order.id)) // actualizează local
+                      }
+                    }}
+                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                  >
+                    Șterge
+                  </button>
+                </div>
+
                 </li>
               ))}
             </ul>
